@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 .env
 .vscode/
+models/intent_model.pkl
+models/vectorizer.pkl

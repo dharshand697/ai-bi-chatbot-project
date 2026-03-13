@@ -79,3 +79,38 @@ https://github.com/dharshand697/ai-bi-chatbot-project
 Team 1 – Data Engineering
 
 
+---
+
+## Team 2 - NLP Intent Recognition
+
+### Module Overview
+Classifies user queries into one of 5 intents so the analytics
+engine knows which analysis to run.
+
+### Files Added
+- `nlp/training_data.py` - 160 labelled training queries across 5 intents
+- `nlp/intent_classifier.py` - TF-IDF vectorizer and classifier training
+
+### Intents Supported
+| Intent | Example Query |
+|---|---|
+| sales_query | "What is total revenue in Q3?" |
+| ranking_query | "Top 5 countries by revenue" |
+| comparison_query | "Compare 2003 vs 2004 sales" |
+| forecast_query | "Predict next month revenue" |
+| hr_query | "What is the attrition rate?" |
+
+### How to Run
+    python nlp/intent_classifier.py
+### how to run test file
+    python nlp/test_interactive.py
+
+### Output
+- `models/intent_model.pkl` - trained classifier
+- `models/vectorizer.pkl` - fitted TF-IDF vectorizer
+- `reports/intent_accuracy.txt` - accuracy report
+
+### Dependencies
+- scikit-learn
+
+--
