@@ -113,4 +113,83 @@ engine knows which analysis to run.
 ### Dependencies
 - scikit-learn
 
+## Team 3 - Analytics Engine
+
+### project structure
+
+├── analytics_engine/ ← YOUR MODULE 
+│ 
+│ ├── core/ 
+│ │ ├── engine.py ← Main controller 
+│ │ ├── query_validator.py 
+│ ├── forecasting/ 
+│ │ ├── forecast_engine.py 
+│ ├── insights/ 
+│ │ ├── insight_generator.py 
+│ │ ├── growth_kpi.py 
+│ ├── kpi/ 
+│ │ ├── growth_kpi.py 
+│ │ ├── revenue_kpi.py 
+│ ├── processors/ 
+│ │ ├── filter_processor.py 
+│ │ ├── groupby_processor.py 
+│ │ ├── ranking_processor.py 
+│ ├── utils/ 
+│ │ ├── metric_mapper.py 
+│ │ ├── response_formatter.py 
+│ └── config.py 
+│─ api/ 
+│ ├── main.py ← FastAPI entry point 
 --
+### overview of each function
+
+🔹 core/
+
+engine.py: Orchestrates the full pipeline — takes parsed query → validates → routes to processors/KPIs/forecast → returns final response.
+
+query_validator.py: Ensures the query is valid (correct metric, aggregation, filters) before execution.
+
+🔹 forecasting/
+
+forecast_engine.py: Generates future predictions (e.g., sales trends) using time-series or ML models.
+
+🔹 insights/
+
+insight_generator.py: Converts raw numbers into human-readable insights (e.g., “Sales increased by 20%”).
+
+growth_kpi.py: Computes growth-related insights like MoM/YoY percentage changes.
+
+🔹 kpi/
+
+growth_kpi.py: Calculates growth metrics (rate of change, trends).
+
+revenue_kpi.py: Computes revenue-based KPIs like total revenue, average revenue, etc.
+
+🔹 processors/
+
+filter_processor.py: Applies conditions (e.g., region = “India”, year = 2023).
+
+groupby_processor.py: Groups data (e.g., sales by region/category).
+
+ranking_processor.py: Produces ranked outputs (e.g., top 5 products by sales).
+
+🔹 utils/
+
+metric_mapper.py: Maps user-friendly terms (“sales”) to dataset column names.
+
+response_formatter.py: Formats output into structured API response (JSON).
+
+🔹 config.py
+
+Stores constants like supported metrics, aggregations, column mappings.
+
+🔹 api/
+
+main.py: Exposes the analytics engine via FastAPI endpoints for external use.
+
+### One-line Summary
+
+👉 Your engine validates → processes → computes KPIs/forecast → generates insights → returns clean API output.
+
+### to run the code 
+python -m uvicorn api.main:app --reload
