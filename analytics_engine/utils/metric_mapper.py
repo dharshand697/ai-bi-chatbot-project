@@ -1,9 +1,14 @@
 METRIC_MAP = {
-    "revenue": "revenue",
-    "sales": "revenue",
-    "income": "revenue",
-    "profit": "profit"
+    "sales": "sales",
+    "revenue": "sales",
+    "income": "sales",
+    "amount": "sales"
 }
 
 def map_metric(metric):
-    return METRIC_MAP.get(metric.lower(),metric)
+    metric = metric.lower()
+
+    if metric in METRIC_MAP:
+        return METRIC_MAP[metric]
+
+    raise ValueError(f"Unsupported metric: {metric}")

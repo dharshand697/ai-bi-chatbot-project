@@ -7,7 +7,7 @@ def prepare_timeseries(df,metric):
 def forecast_metric(df,metric, steps=3):
     ts = prepare_timeseries(df, metric)
 
-    model = ARIMA(ts, rder=(1,1,1))
+    model = ARIMA(ts, order=(1,1,1))
     model_fit = model.fit()
 
     forecast = model_fit.forecast(steps=steps)

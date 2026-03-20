@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+import pandas as pd
 
 # ✅ Initialize app FIRST
 app = FastAPI()
@@ -53,13 +54,8 @@ def test_data():
 # 3️⃣ Filter Test
 @app.post("/test/filter")
 def test_filter(request: QueryRequest):
-    df = load_dataset()
-    filtered_df = apply_filters(df, request.query)
+    return process_query(request.query)
     
-    return {
-        "rows_after_filter": len(filtered_df)
-    }
-
 
 # 4️⃣ Engine Test
 @app.post("/test/engine")
@@ -70,5 +66,36 @@ def test_engine(request: QueryRequest):
 # 5️⃣ Forecast Test
 @app.get("/test/forecast")
 def test_forecast():
-    df = load_dataset()
-    return forecast_metric(df, metric="sales")
+    try:
+        df = load_dataset()
+
+        # ✅ Check columns
+        if "orderdate" not in df.columns:
+            return {"status": "error", "message": "orderdate column missing"}
+
+        if "sales" not in df.columns:
+            return {"status": "error", "message": "sales column missing"}
+
+        # ✅ Convert date
+        df["orderdate"] = pd.to_datetime(df["orderdate"], errors="coerce")
+
+        # ✅ Drop invalid rows
+        df = df.dropna(subset=["orderdate", "sales"])
+
+        # ✅ Sort (important for forecasting)
+        df = df.sort_values("orderdate")
+
+        # ✅ Aggregate
+        df_grouped = df.groupby("orderdate")["sales"].sum().reset_index()
+
+        # ✅ Rename columns (VERY IMPORTANT)
+        df_grouped.columns = ["date", "sales"]
+
+        # ✅ Debug print (optional)
+        print(df_grouped.head())
+
+        # ✅ Forecast
+        return forecast_metric(df_grouped, metric="sales")
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

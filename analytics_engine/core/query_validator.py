@@ -1,48 +1,54 @@
 import re
 from analytics_engine.config import METRIC_COLUMNS, SUPPORTED_AGGREGATIONS
 
-def validate_query(query: str):
-    query = query.lower()
+def validate_query(query):
 
-    metric = None
-    aggregation = None
-    limit = None
-    intent = "aggregation"  # default
+    # 🔥 CASE 1: Already parsed (DICT) → SAFE
+    if isinstance(query, dict):
+        if "metric" not in query:
+            raise ValueError("Metric Missing")
+        return True
 
-    # 🔹 Detect metric
-    for col in METRIC_COLUMNS:
-        if col in query:
-            metric = col
-            break
+    # 🔥 CASE 2: Raw string → process
+    elif isinstance(query, str):
+        query = query.lower()
 
-    # 🔹 Detect aggregation
-    for agg in SUPPORTED_AGGREGATIONS:
-        if agg in query:
-            aggregation = agg
-            break
+        metric = None
+        aggregation = None
+        limit = None
+        intent = "aggregation"
 
-    # 🔹 Default aggregation
-    if not aggregation:
-        aggregation = "sum"
+        # Detect metric
+        for col in METRIC_COLUMNS:
+            if col in query:
+                metric = col
+                break
 
-    # 🔹 Detect TOP N (ranking)
-    if "top" in query:
-        intent = "ranking"
-        match = re.search(r'\d+', query)
-        if match:
-            limit = int(match.group())
+        # Detect aggregation
+        for agg in SUPPORTED_AGGREGATIONS:
+            if agg in query:
+                aggregation = agg
+                break
 
-    # 🔹 Validation
-    if not metric:
+        if not aggregation:
+            aggregation = "sum"
+
+        # Detect TOP N
+        if "top" in query:
+            intent = "ranking"
+            match = re.search(r'\d+', query)
+            if match:
+                limit = int(match.group())
+
+        if not metric:
+            raise ValueError("Metric Missing")
+
         return {
-            "status": "error",
-            "message": "Metric Missing"
+            "intent": intent,
+            "metric": metric,
+            "aggregation": aggregation,
+            "limit": limit
         }
 
-    return {
-        "status": "success",
-        "intent": intent,
-        "metric": metric,
-        "aggregation": aggregation,
-        "limit": limit
-    }
+    else:
+        raise ValueError("Invalid query format")
