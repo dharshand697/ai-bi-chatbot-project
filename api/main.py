@@ -1,15 +1,11 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from typing import Dict, Any
 import pandas as pd
 
-# ✅ Initialize app FIRST
+# ✅ Initialize app
 app = FastAPI()
 
-# ✅ Request schema
-class QueryRequest(BaseModel):
-    query: str
-
-# ✅ Imports (after app is fine too, but keep clean)
+# ✅ Import engine logic
 from analytics_engine.core.engine import process_query
 from analytics_engine.core.query_validator import validate_query
 from analytics_engine.utils.data_loader import load_dataset
@@ -23,19 +19,29 @@ def home():
     return {"message": "AI BI Chatbot API is running 🚀"}
 
 
-# ✅ Main endpoint
+# ✅ MAIN ENDPOINT (FIXED FOR NLP INTEGRATION)
 @app.post("/analyze")
-def analyze(request: QueryRequest):
-    return process_query(request.query)
+def analyze(query: Dict[str, Any]):
+    """
+    Receives structured JSON from NLP module
+    Example:
+    {
+        "action": "get_top_products",
+        "limit": 5,
+        "metric": "sales",
+        "time": "last month"
+    }
+    """
+    return process_query(query)
 
 
-# ---- TESTING ENDPOINTS ----
+# ---------------- TESTING ENDPOINTS ----------------
 
-# 1️⃣ NLP Test
+# 1️⃣ NLP Validation Test (optional)
 @app.post("/test/validate")
-def test_validate(request: QueryRequest):
+def test_validate(query: Dict[str, Any]):
     try:
-        result = validate_query(request.query)
+        result = validate_query(query)
         return {"status": "success", "data": result}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -53,14 +59,14 @@ def test_data():
 
 # 3️⃣ Filter Test
 @app.post("/test/filter")
-def test_filter(request: QueryRequest):
-    return process_query(request.query)
-    
+def test_filter(query: Dict[str, Any]):
+    return process_query(query)
+
 
 # 4️⃣ Engine Test
 @app.post("/test/engine")
-def test_engine(request: QueryRequest):
-    return process_query(request.query)
+def test_engine(query: Dict[str, Any]):
+    return process_query(query)
 
 
 # 5️⃣ Forecast Test
@@ -69,32 +75,19 @@ def test_forecast():
     try:
         df = load_dataset()
 
-        # ✅ Check columns
         if "orderdate" not in df.columns:
             return {"status": "error", "message": "orderdate column missing"}
 
         if "sales" not in df.columns:
             return {"status": "error", "message": "sales column missing"}
 
-        # ✅ Convert date
         df["orderdate"] = pd.to_datetime(df["orderdate"], errors="coerce")
-
-        # ✅ Drop invalid rows
         df = df.dropna(subset=["orderdate", "sales"])
-
-        # ✅ Sort (important for forecasting)
         df = df.sort_values("orderdate")
 
-        # ✅ Aggregate
         df_grouped = df.groupby("orderdate")["sales"].sum().reset_index()
-
-        # ✅ Rename columns (VERY IMPORTANT)
         df_grouped.columns = ["date", "sales"]
 
-        # ✅ Debug print (optional)
-        print(df_grouped.head())
-
-        # ✅ Forecast
         return forecast_metric(df_grouped, metric="sales")
 
     except Exception as e:

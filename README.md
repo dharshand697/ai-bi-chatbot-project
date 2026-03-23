@@ -101,9 +101,9 @@ engine knows which analysis to run.
 | hr_query | "What is the attrition rate?" |
 
 ### How to Run
-    python nlp/intent_classifier.py
+    python Team2_module/intent_classifier.py
 ### how to run test file
-    python nlp/test_interactive.py
+    python Team2_module/test_interactive.py
 
 ### Output
 - `models/intent_model.pkl` - trained classifier
@@ -112,6 +112,43 @@ engine knows which analysis to run.
 
 ### Dependencies
 - scikit-learn
+
+### UPDATED NLP MODULE CONSISTS OF 
+🔧 Additional Files Added
+entity_extractor.py – Extracts entities (numbers, metrics, time, filters)
+query_builder.py – Converts intent + entities into structured query
+analytics_client.py – Sends structured query to FastAPI /analyze endpoint
+response_generator.py – Converts API response into human-readable output
+
+⚡ New Capabilities
+Entity extraction:
+Numbers (e.g., Top 5 → top_n = 5)
+Metrics (revenue → sales mapping)
+Time filters (last month, this month)
+Basic filters (region, category, product)
+Structured query generation:
+Converts natural language → backend-ready JSON
+API integration:
+Connects NLP module with analytics engine via REST API
+Response generation:
+Formats results into readable answers
+
+🔗 Integration Update
+
+NLP module now connects with analytics backend:
+
+NLP → Structured Query → FastAPI (/analyze) → Analytics Engine → Response
+🧪 Debug Mode (New)
+
+### Interactive tester now includes NLP debugging:
+
+Displays extracted entities
+Shows structured query
+Prints API response
+⚠️ Additional Requirements
+FastAPI backend must be running:
+python -m uvicorn main:app --reload
+OPEN ANOTHER TERMINAL and run the nlp module 
 
 ## Team 3 - Analytics Engine
 
@@ -187,9 +224,7 @@ Stores constants like supported metrics, aggregations, column mappings.
 
 main.py: Exposes the analytics engine via FastAPI endpoints for external use.
 
-### One-line Summary
-
-👉 Your engine validates → processes → computes KPIs/forecast → generates insights → returns clean API output.
+### INTEGRATED WITH NLP MODULE SUCCESSFULLY
 
 ### to run the code 
 python -m uvicorn api.main:app --reload

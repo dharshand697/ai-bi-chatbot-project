@@ -17,25 +17,56 @@ def process_query(query):
     try:
         df = load_dataset()
 
-        # 🔥 CRITICAL FIX (ONLY THIS LOGIC)
-        if isinstance(query, dict):
-            query_text = query.get("query", "")
-            query = parse_query(query_text)
+        # ✅ Ensure structured input
+        if not isinstance(query, dict):
+            raise ValueError("Query must be structured JSON")
 
-        elif isinstance(query, str):
-            query = parse_query(query)
+        print("🔥 Received Query from NLP:", query)
 
-        else:
-            raise ValueError("Invalid query format")
+        # ---------------- 🔄 NORMALIZATION LAYER ----------------
+        # Convert NLP format → Engine format
 
-        print("Parsed Query:", query)
+        # action → intent
+        if "action" in query:
+            action_map = {
+                "get_top_products": "ranking_query",
+                "sales_trend": "sales_query",
+                "filtered_search": "sales_query",
+                "forecast": "forecast_query",
+                "insights": "insight_query"
+            }
+            query["intent"] = action_map.get(query["action"], query.get("intent"))
+
+        # limit → top_n
+        if "limit" in query:
+            query["top_n"] = query["limit"]
+
+        # time → filters (basic handling)
+        if "time" in query:
+            if "filters" not in query or query["filters"] is None:
+                query["filters"] = {}
+
+            query["filters"]["time"] = query["time"]
+
+        # Ensure intent is string
+        query["intent"] = str(query.get("intent"))
+
+        # -------------------------------------------------------
 
         validate_query(query)
 
-        metric = map_metric(query["metric"])
+        intent = query.get("intent")
 
+        # Forecast flag
+        if intent == "forecast_query":
+            query["forecast"] = True
+
+        metric = map_metric(query.get("metric", "sales"))
+
+        # Apply filters
         df = apply_filters(df, query.get("filters"))
 
+        # Grouping
         if query.get("group_by"):
             df = apply_groupby(
                 df,
@@ -44,13 +75,16 @@ def process_query(query):
                 query.get("aggregation", "sum")
             )
 
+        # Ranking
         if query.get("top_n"):
             df = apply_ranking(df, metric, query["top_n"])
 
+        # Forecast
         if query.get("forecast"):
             forecast = forecast_metric(df, metric)
             return success_response(forecast)
 
+        # Insights
         insight = generate_insight(df, metric)
 
         return success_response(
