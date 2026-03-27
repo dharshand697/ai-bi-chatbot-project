@@ -16,10 +16,14 @@ from training_data import training_data
 texts  = [item[0] for item in training_data]
 labels = [item[1] for item in training_data]
 
+# Improved vectorizer: removed stop_words to keep intent signals like "vs", "compare", "predict"
+# Using ngram_range (1,2) captures both single words and word pairs
+# min_df=2 helps reduce noise by requiring terms to appear in at least 2 documents
 vectorizer = TfidfVectorizer(
     ngram_range=(1, 2),
-    min_df=1,
-    stop_words="english"
+    min_df=2,
+    stop_words=None,  # Keep words like "vs", "compare", "predict" - they're intent signals
+    sublinear_tf=True  # Use log scaling for term frequency
 )
 
 X = vectorizer.fit_transform(texts)
@@ -34,11 +38,12 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # Training Classifiers
 # Both Logistic Regression and Random Forest are trained.
-# The model with higher test accuracy is selected automatically.
+# Logistic Regression is preferred for text classification with TF-IDF
+# as it tends to generalize better and is less prone to overfitting.
+# The model with higher cross-validation score is selected.
 
-
-lr = LogisticRegression(max_iter=1000, random_state=42)
-rf = RandomForestClassifier(n_estimators=100, random_state=42)
+lr = LogisticRegression(max_iter=1000, random_state=42, C=1.0)
+rf = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=None)
 
 lr.fit(X_train, y_train)
 rf.fit(X_train, y_train)
@@ -46,7 +51,12 @@ rf.fit(X_train, y_train)
 lr_acc = accuracy_score(y_test, lr.predict(X_test))
 rf_acc = accuracy_score(y_test, rf.predict(X_test))
 
-if lr_acc >= rf_acc:
+# Use cross-validation for more robust model selection
+lr_cv = cross_val_score(lr, X, labels, cv=5).mean()
+rf_cv = cross_val_score(rf, X, labels, cv=5).mean()
+
+# Prefer Logistic Regression for text classification unless RF is significantly better
+if lr_cv >= rf_cv - 0.02:  # Within 2% goes to LR
     best_model, best_name, best_acc = lr, "Logistic Regression", lr_acc
 else:
     best_model, best_name, best_acc = rf, "Random Forest", rf_acc
@@ -74,9 +84,9 @@ with open(os.path.join(reports_dir, "intent_accuracy.txt"), "w", encoding="utf-8
     f.write("=" * 50 + "\n\n")
     f.write(f"Training examples       : {len(texts)}\n")
     f.write(f"Train / Test split      : 80% / 20%\n")
-    f.write(f"Vectorizer              : TF-IDF  ngram_range=(1,2)\n\n")
-    f.write(f"Logistic Regression     : {lr_acc * 100:.1f}%\n")
-    f.write(f"Random Forest           : {rf_acc * 100:.1f}%\n")
+    f.write(f"Vectorizer              : TF-IDF  ngram_range=(1,2), sublinear_tf=True\n\n")
+    f.write(f"Logistic Regression     : {lr_acc * 100:.1f}% (CV: {lr_cv * 100:.1f}%)\n")
+    f.write(f"Random Forest           : {rf_acc * 100:.1f}% (CV: {rf_cv * 100:.1f}%)\n")
     f.write(f"Selected model          : {best_name}\n\n")
     f.write(f"Test accuracy           : {best_acc * 100:.1f}%\n")
     f.write(f"Cross-val accuracy      : {cv_scores.mean() * 100:.1f}% "

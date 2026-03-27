@@ -42,17 +42,26 @@ while True:
         continue
 
     intent = model.predict(vec.transform([query]))[0]
-    confidence = model.predict_proba(vec.transform([query])).max()
+    probs = model.predict_proba(vec.transform([query]))[0]
+    confidence = probs.max()
 
-    if confidence >= 0.80:
+    # Confidence thresholds
+    if confidence >= 0.75:
         level = "High"
     elif confidence >= 0.50:
         level = "Medium"
     else:
-        level = "Low - consider adding more training examples"
+        level = "Low"
 
     print(f" Intent     : {intent}")
     print(f" Confidence : {confidence:.0%} ({level})")
+
+    # Warn if low confidence or close second choice
+    sorted_probs = sorted(zip(model.classes_, probs), key=lambda x: x[1], reverse=True)
+    if confidence < 0.50:
+        print(f" [!] Low confidence - consider rephrasing or adding training data")
+    elif len(sorted_probs) >= 2 and sorted_probs[1][1] > confidence - 0.15:
+        print(f" [!] Ambiguous: '{sorted_probs[0][0]}' vs '{sorted_probs[1][0]}'")
 
     # ---------------- ADVANCED PIPELINE ----------------
     if ADVANCED_PIPELINE:
