@@ -2,7 +2,9 @@ METRIC_MAP = {
     "sales": "sales",
     "revenue": "sales",
     "income": "sales",
-    "amount": "sales"
+    "amount": "sales",
+    "profit": "sales",
+    "earnings": "sales"
 }
 
 def map_metric(metric):
