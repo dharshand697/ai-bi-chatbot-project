@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>InsightAI — AI Chatbot Company Data Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+<style>
+/* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+[data-theme="dark"] {
+  --bg:      #080c14;
+  --bg2:     #0d1422;
+  --card:    #141e30;
+  --card2:   #1a2640;
+  --border:  rgba(99,179,237,0.12);
+  --border2: rgba(99,179,237,0.25);
+  --accent:  #3b82f6;
+  --accent2: #60a5fa;
+  --cyan:    #22d3ee;
+  --green:   #34d399;
+  --amber:   #fbbf24;
+  --rose:    #f87171;
+  --purple:  #a78bfa;
+  --text:    #e2e8f0;
+  --text2:   #94a3b8;
+  --text3:   #64748b;
+  --glow:    rgba(59,130,246,0.15);
+  --shadow:  rgba(0,0,0,0.4);
+  --google-bg: #1e293b;
+  --google-border: rgba(99,179,237,0.2);
+}
+
+[data-theme="light"] {
+  --bg:      #f0f4f8;
+  --bg2:     #e2eaf3;
+  --card:    #ffffff;
+  --card2:   #f7fafc;
+  --border:  rgba(59,130,246,0.15);
+  --border2: rgba(59,130,246,0.35);
+  --accent:  #2563eb;
+  --accent2: #3b82f6;
+  --cyan:    #0891b2;
+  --green:   #059669;
+  --amber:   #d97706;
+  --rose:    #dc2626;
+  --purple:  #7c3aed;
+  --text:    #1e293b;
+  --text2:   #475569;
+  --text3:   #94a3b8;
+  --glow:    rgba(37,99,235,0.1);
+  --shadow:  rgba(0,0,0,0.12);
+  --google-bg: #f8fafc;
+  --google-border: rgba(59,130,246,0.25);
+}
+
+[data-theme="blue"] {
+  --bg:      #03071e;
+  --bg2:     #06102b;
+  --card:    #0a1a38;
+  --card2:   #0e2148;
+  --border:  rgba(147,197,253,0.12);
+  --border2: rgba(147,197,253,0.3);
+  --accent:  #2563eb;
+  --accent2: #93c5fd;
+  --cyan:    #38bdf8;
+  --green:   #4ade80;
+  --amber:   #facc15;
+  --rose:    #fb7185;
+  --purple:  #c084fc;
+  --text:    #e0f2fe;
+  --text2:   #7dd3fc;
+  --text3:   #3b82f6;
+  --glow:    rgba(37,99,235,0.2);
+  --shadow:  rgba(0,0,0,0.5);
+  --google-bg: #0e2148;
+  --google-border: rgba(147,197,253,0.25);
+}
+
+[data-theme="purple"] {
+  --bg:      #0d0618;
+  --bg2:     #130922;
+  --card:    #1a0f30;
+  --card2:   #22153d;
+  --border:  rgba(196,181,253,0.12);
+  --border2: rgba(196,181,253,0.28);
+  --accent:  #7c3aed;
+  --accent2: #c4b5fd;
+  --cyan:    #a78bfa;
+  --green:   #34d399;
+  --amber:   #fbbf24;
+  --rose:    #f87171;
+  --purple:  #e879f9;
+  --text:    #f3e8ff;
+  --text2:   #c4b5fd;
+  --text3:   #7c3aed;
+  --glow:    rgba(124,58,237,0.18);
+  --shadow:  rgba(0,0,0,0.5);
+  --google-bg: #22153d;
+  --google-border: rgba(196,181,253,0.25);
+}
+
+/* ============================================================
+   CSS RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background .3s, color .3s;
+}
+
+h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
+a { text-decoration: none; color: inherit; cursor: pointer; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeUp   { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+@keyframes glow     { 0%,100% { box-shadow:0 0 16px rgba(59,130,246,.2); } 50% { box-shadow:0 0 28px rgba(34,211,238,.18); } }
+@keyframes blink    { 0%,100% { opacity:1; } 50% { opacity:0; } }
+@keyframes spin     { from { transform:rotate(0); } to { transform:rotate(360deg); } }
+@keyframes float    { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+@keyframes pulse-ring { 0%{transform:scale(.9);opacity:.7} 50%{transform:scale(1.08);opacity:.3} 100%{transform:scale(.9);opacity:.7} }
+@keyframes slideDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(59,130,246,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 300;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  background: rgba(8,12,20,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  transition: background .3s;
+}
+
+[data-theme="light"] .nav { background: rgba(240,244,248,0.92); }
+[data-theme="blue"]  .nav { background: rgba(3,7,30,0.92); }
+[data-theme="purple"].nav { background: rgba(13,6,24,0.92); }
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.nav-logo-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: glow 2.5s ease-in-out infinite;
+}
+
+.nav-logo-sub { color: var(--text3); font-weight: 400; font-size: .78rem; }
+
+.nav-links { display: flex; gap: .2rem; list-style: none; }
+
+.nav-links a {
+  padding: 5px 13px;
+  border-radius: 6px;
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--text2);
+  transition: all .2s;
+}
+.nav-links a:hover,
+.nav-links a.active { color: var(--text); background: var(--card); }
+
+/* Nav Right Controls */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+/* Date/Day pill */
+.nav-datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+  font-size: .7rem;
+}
+.nav-day   { color: var(--accent2); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.nav-date  { color: var(--text3); font-size: .64rem; }
+
+/* Live clock */
+.nav-clock {
+  font-family: 'Syne', sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text2);
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: .05em;
+  min-width: 70px;
+  text-align: center;
+}
+
+/* Theme switcher */
+.theme-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text2);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+  position: relative;
+}
+.theme-btn:hover { border-color: var(--border2); color: var(--text); }
+
+.theme-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  display: none;
+  z-index: 500;
+  min-width: 150px;
+  box-shadow: 0 16px 40px var(--shadow);
+  animation: slideDown .2s ease;
+}
+.theme-dropdown.open { display: block; }
+.theme-option {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 14px; font-size: .82rem; font-weight: 500;
+  color: var(--text2); cursor: pointer; transition: all .15s;
+  border: none; background: none; width: 100%; text-align: left;
+  font-family: 'DM Sans', sans-serif;
+}
+.theme-option:hover { background: var(--bg2); color: var(--text); }
+.theme-option.active { color: var(--accent2); background: rgba(59,130,246,.06); }
+.theme-swatch {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* User avatar (post login) */
+.nav-user {
+  display: none;
+  align-items: center;
+  gap: .5rem;
+  padding: 4px 11px 4px 5px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+}
+.nav-user:hover { border-color: var(--border2); color: var(--text); }
+.nav-user.visible { display: flex; }
+
+.nav-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.nav-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  display: none;
+  z-index: 500;
+  min-width: 190px;
+  box-shadow: 0 16px 40px var(--shadow);
+  animation: slideDown .2s ease;
+}
+.user-dropdown.open { display: block; }
+.user-dd-header {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.user-dd-name  { font-weight: 700; font-size: .88rem; }
+.user-dd-email { font-size: .72rem; color: var(--text3); margin-top: 2px; }
+.user-dd-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 14px; font-size: .82rem; font-weight: 500;
+  color: var(--text2); cursor: pointer; transition: all .15s;
+  border: none; background: none; width: 100%; text-align: left;
+  font-family: 'DM Sans', sans-serif;
+}
+.user-dd-item:hover { background: var(--bg2); color: var(--text); }
+.user-dd-item.danger { color: var(--rose); }
+.user-dd-item.danger:hover { background: rgba(248,113,113,.08); }
+.user-dd-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: .85rem;
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+  text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(59,130,246,.3); }
+.btn-ghost   { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--card); color: var(--text); }
+.btn-outline { background: transparent; color: var(--accent2); border: 1px solid rgba(59,130,246,.35); }
+.btn-outline:hover { background: rgba(59,130,246,.1); }
+.btn-sm { padding: 5px 12px; font-size: .75rem; }
+
+/* ============================================================
+   PAGES — show/hide
+   ============================================================ */
+.page { display: none; padding-top: 60px; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ============================================================
+   PAGE 1 — HOME / LANDING
+   ============================================================ */
+.hero {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: rgba(59,130,246,.1);
+  border: 1px solid rgba(59,130,246,.2);
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--accent2);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  animation: fadeUp .5s ease both;
+}
+.hero-badge-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block; animation: pulse-ring 2s ease infinite; }
+
+.hero-title {
+  font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  margin-bottom: 1.25rem;
+  animation: fadeUp .5s .1s ease both;
+}
+
+.hero-grad {
+  background: linear-gradient(135deg, var(--accent2), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--text2);
+  line-height: 1.7;
+  max-width: 560px;
+  margin: 0 auto 2.5rem;
+  animation: fadeUp .5s .15s ease both;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeUp .5s .2s ease both;
+}
+
+.stats-row {
+  display: flex;
+  gap: 1px;
+  margin-top: 5rem;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  animation: fadeUp .5s .3s ease both;
+}
+
+.stat-cell { padding: 1.1rem 1.8rem; background: var(--card); text-align: center; }
+.stat-val { font-family: 'Syne', sans-serif; font-size: 1.55rem; font-weight: 800; }
+.stat-lbl { font-size: .7rem; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-top: 3px; }
+
+/* Features */
+.features-section { padding: 1rem 2rem 5rem; max-width: 1100px; margin: 0 auto; }
+.sec-tag   { font-size: .72rem; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .4rem; }
+.sec-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 2rem; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 1rem; }
+
+.feat-card {
+  padding: 1.5rem; background: var(--card);
+  border: 1px solid var(--border); border-radius: 12px;
+  transition: all .25s;
+}
+.feat-card:hover { border-color: var(--border2); box-shadow: 0 4px 24px var(--shadow); transform: translateY(-2px); }
+
+.feat-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; margin-bottom: 1rem;
+}
+.feat-card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem; margin-bottom: .4rem; }
+.feat-card p  { font-size: .83rem; color: var(--text2); line-height: 1.6; }
+
+/* Integrations badge row */
+.integrations-row {
+  display: flex; gap: .6rem; flex-wrap: wrap; justify-content: center;
+  margin: 2rem 0 0;
+  animation: fadeUp .5s .35s ease both;
+}
+.int-badge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px;
+  background: var(--card); border: 1px solid var(--border);
+  font-size: .72rem; color: var(--text3); font-weight: 500;
+}
+.int-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* CTA */
+.cta-section {
+  text-align: center; padding: 4rem 2rem;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg, transparent, rgba(59,130,246,.05));
+}
+.cta-section h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; }
+.cta-section p  { color: var(--text2); margin-bottom: 2rem; }
+
+/* Footer */
+.footer {
+  padding: 1.25rem 2rem;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap;
+  gap: 1rem; font-size: .78rem; color: var(--text3);
+}
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a { color: var(--text3); }
+.footer-links a:hover { color: var(--text2); }
+
+/* ============================================================
+   PAGE 2 — LOGIN
+   ============================================================ */
+.login-wrap {
+  min-height: calc(100vh - 60px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem; position: relative;
+}
+
+.login-orb { position: absolute; border-radius: 50%; pointer-events: none; }
+
+.login-card {
+  width: 100%; max-width: 440px;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 24px 80px var(--shadow);
+  animation: fadeUp .5s ease forwards;
+  position: relative; z-index: 1;
+}
+
+.login-logo-wrap { text-align: center; padding: 1.5rem 1.75rem 0; }
+.login-logo {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem;
+  margin-bottom: .4rem;
+}
+.login-logo-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); display: inline-block; }
+.login-sub { font-size: .82rem; color: var(--text3); }
+
+/* Tabs */
+.login-tabs { display: flex; border-bottom: 1px solid var(--border); margin-top: 1.25rem; }
+.login-tab {
+  flex: 1; padding: .9rem;
+  background: none; border: none;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  font-weight: 600; font-size: .875rem;
+  color: var(--text3); transition: all .2s;
+}
+.login-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+/* Role pills */
+.role-pills { display: flex; gap: .5rem; }
+.role-pill {
+  flex: 1; padding: 6px; border-radius: 8px;
+  font-size: .73rem; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  border: 1px solid var(--border); background: var(--bg2);
+  color: var(--text3); transition: all .15s; text-align: center;
+}
+.role-pill.active { background: rgba(59,130,246,.15); color: var(--accent2); border-color: rgba(59,130,246,.35); }
+
+/* Form */
+.login-form { padding: 1.75rem; display: flex; flex-direction: column; gap: .875rem; }
+
+.lf-label { display: block; font-size: .78rem; font-weight: 500; color: var(--text2); letter-spacing: .04em; margin-bottom: 5px; }
+.lf-input {
+  width: 100%; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 9px 13px; color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: .88rem;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.lf-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+.lf-input::placeholder { color: var(--text3); }
+
+.pw-wrap { position: relative; }
+.pw-wrap .lf-input { padding-right: 40px; }
+.pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text3); font-size: .8rem; }
+
+.lf-row { display: flex; gap: .75rem; }
+.lf-row > div { flex: 1; }
+
+.lf-error {
+  padding: 9px 13px; border-radius: 8px;
+  background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2);
+  color: var(--rose); font-size: .82rem; display: none;
+}
+
+.btn-login {
+  width: 100%; padding: 10px; border-radius: 8px;
+  background: var(--accent); color: #fff;
+  font-weight: 600; font-size: .9rem; border: none;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s;
+}
+.btn-login:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,.3); }
+
+/* Google Sign-In Button */
+.btn-google {
+  width: 100%; padding: 10px 14px; border-radius: 8px;
+  background: var(--google-bg); color: var(--text);
+  font-weight: 600; font-size: .88rem; border: 1px solid var(--google-border);
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn-google:hover { border-color: var(--border2); background: var(--card2); box-shadow: 0 4px 16px var(--shadow); }
+.google-icon {
+  width: 18px; height: 18px; flex-shrink: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%234285F4' d='M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.5 2.9-2.2 5.4-4.7 7v5.8h7.6c4.5-4.1 7-10.2 7-16.8z'/%3E%3Cpath fill='%2334A853' d='M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.8c-2.2 1.5-5 2.3-8.3 2.3-6.4 0-11.8-4.3-13.7-10h-7.9v6A24 24 0 0 0 24 48z'/%3E%3Cpath fill='%23FBBC05' d='M10.3 28.7A14.3 14.3 0 0 1 10.3 19.3v-6H2.4a24 24 0 0 0 0 21.4l7.9-6z'/%3E%3Cpath fill='%23EA4335' d='M24 9.6c3.6 0 6.8 1.2 9.3 3.6l7-7C36 2.4 30.5 0 24 0A24 24 0 0 0 2.4 13.3l7.9 6C12.2 13.9 17.6 9.6 24 9.6z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.or-divider {
+  display: flex; align-items: center; gap: .75rem;
+  font-size: .72rem; color: var(--text3);
+}
+.or-divider::before, .or-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+.forgot-link {
+  background: none; border: none; cursor: pointer;
+  color: var(--accent2); font-size: .8rem; text-align: center;
+  font-family: 'DM Sans', sans-serif; width: 100%;
+}
+
+.login-hint {
+  border-top: 1px solid var(--border); padding-top: 1rem;
+  text-align: center; font-size: .76rem; color: var(--text3);
+}
+.login-hint code { color: var(--accent2); background: var(--bg2); padding: 2px 6px; border-radius: 4px; }
+
+/* Forgot panel */
+.forgot-panel { padding: 1.75rem; display: none; flex-direction: column; gap: 1rem; }
+.back-btn { background: none; border: none; cursor: pointer; color: var(--text2); font-size: .78rem; font-family: 'DM Sans', sans-serif; padding: 0; }
+.reset-success { padding: 1rem; border-radius: 10px; background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.2); color: var(--green); font-size: .875rem; text-align: center; display: none; }
+
+/* ============================================================
+   SHARED — SIDEBAR + MAIN LAYOUT
+   ============================================================ */
+.dash-layout { display: flex; }
+
+.sidebar {
+  position: fixed; left: 0; top: 60px; bottom: 0;
+  width: 210px; background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 1.25rem .875rem; overflow-y: auto; z-index: 100;
+  display: flex; flex-direction: column;
+  transition: background .3s;
+}
+
+.sb-section { margin-bottom: 1.25rem; }
+.sb-label { font-size: .62rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; padding: 0 8px; margin-bottom: 5px; display: block; }
+.sb-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 9px; border-radius: 7px;
+  font-size: .84rem; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: all .15s; margin-bottom: 2px;
+}
+.sb-item:hover, .sb-item.active { background: var(--card); color: var(--text); }
+.sb-item.active { color: var(--accent2); background: rgba(59,130,246,.08); }
+.sb-item.danger { color: var(--rose); }
+.sb-item.danger:hover { background: rgba(248,113,113,.08); }
+
+/* Sidebar bottom spacer */
+.sb-bottom { margin-top: auto; }
+
+/* Sidebar user card */
+.sb-user-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 10px 8px;
+  margin-top: 1rem;
+}
+.sb-user-name { font-size: .82rem; font-weight: 700; color: var(--text); }
+.sb-user-role { font-size: .68rem; color: var(--text3); margin-top: 2px; }
+.sb-user-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: .78rem; font-weight: 700; color: #fff; margin-bottom: 7px;
+}
+
+.dash-main {
+  margin-left: 210px;
+  padding: 1.75rem;
+  min-height: calc(100vh - 60px);
+  width: 100%;
+}
+
+.page-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: .2rem; }
+.page-sub   { font-size: .82rem; color: var(--text2); margin-bottom: 1.25rem; }
+
+/* ============================================================
+   PAGE 3 — DASHBOARD
+   ============================================================ */
+.filters-bar {
+  display: flex; gap: .75rem; flex-wrap: wrap;
+  padding: .875rem 1.25rem;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 1.25rem;
+  align-items: flex-end;
+}
+.filter-group { display: flex; flex-direction: column; gap: 4px; }
+.filter-label { font-size: .66rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; }
+.filter-select {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 6px 11px; color: var(--text);
+  font-size: .8rem; font-family: 'DM Sans', sans-serif;
+  outline: none; min-width: 130px; cursor: pointer;
+  transition: border-color .2s;
+}
+.filter-select:focus { border-color: var(--accent); }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: .875rem; margin-bottom: 1.25rem; }
+
+.kpi-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 13px; padding: 1.1rem 1.3rem;
+  position: relative; overflow: hidden; transition: all .3s;
+}
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: var(--kpi-clr, var(--accent)); opacity: .75;
+}
+.kpi-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 28px var(--shadow); }
+.kpi-label { font-size: .7rem; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .4rem; }
+.kpi-value { font-family: 'Syne', sans-serif; font-size: 1.65rem; font-weight: 700; line-height: 1.1; }
+.kpi-value.sm { font-size: 1.15rem; }
+.kpi-trend { font-size: .72rem; color: var(--green); margin-top: .3rem; }
+
+.chart-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-bottom: 1.1rem; }
+
+.chart-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 13px; padding: 1.25rem;
+}
+.chart-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: .875rem;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: .85rem;
+}
+.dl-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 5px; font-size: .72rem; font-weight: 600;
+  background: rgba(59,130,246,.1); color: var(--accent2);
+  border: 1px solid rgba(59,130,246,.2); cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all .2s;
+}
+.dl-btn:hover { background: rgba(59,130,246,.2); border-color: var(--accent); }
+
+.heatmap-table { width: 100%; border-collapse: separate; border-spacing: 5px; }
+.heatmap-table th { font-size: .7rem; color: var(--text3); font-weight: 600; padding: 4px 8px; text-align: center; }
+.heatmap-table th:first-child { text-align: left; }
+.heatmap-table td.row-lbl { font-size: .82rem; color: var(--text); font-weight: 600; padding: 4px 8px; white-space: nowrap; }
+.hm-cell {
+  border-radius: 7px; padding: 10px 8px;
+  font-size: .75rem; font-weight: 700;
+  text-align: center; cursor: default; transition: transform .15s;
+}
+.hm-cell:hover { transform: scale(1.07); }
+
+.profit-row { display: flex; align-items: center; gap: 1rem; margin-bottom: .55rem; }
+.profit-label { width: 120px; font-size: .8rem; color: var(--text2); flex-shrink: 0; text-align: right; }
+.profit-bar-wrap { flex: 1; height: 20px; background: var(--bg2); border-radius: 4px; overflow: hidden; }
+.profit-bar { height: 100%; border-radius: 4px; }
+.profit-val { width: 90px; font-size: .8rem; font-weight: 600; flex-shrink: 0; }
+
+.status-badge {
+  font-size: .72rem; padding: 4px 12px; border-radius: 20px;
+}
+
+/* Module integration status bar */
+.module-status-bar {
+  display: flex; gap: .5rem; flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.module-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 8px;
+  font-size: .72rem; font-weight: 600;
+  border: 1px solid var(--border); background: var(--card);
+  color: var(--text2); cursor: default;
+}
+.module-chip.ready  { color: var(--green); border-color: rgba(52,211,153,.25); background: rgba(52,211,153,.06); }
+.module-chip.active { color: var(--accent2); border-color: rgba(59,130,246,.3); background: rgba(59,130,246,.07); }
+.module-chip.pending{ color: var(--amber); border-color: rgba(251,191,36,.25); background: rgba(251,191,36,.05); }
+.module-chip-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* ============================================================
+   PAGE 4 — CHATBOT
+   ============================================================ */
+.chat-layout { display: flex; }
+.chat-main {
+  margin-left: 210px;
+  display: flex; flex-direction: column;
+  height: calc(100vh - 60px); width: 100%;
+}
+.chat-header {
+  padding: 1.1rem 1.75rem .75rem;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.chat-header h1 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: .15rem; }
+.chat-header p  { font-size: .78rem; color: var(--text3); }
+
+.messages {
+  flex: 1; overflow-y: auto;
+  padding: 1.25rem 1.75rem;
+  display: flex; flex-direction: column; gap: .875rem;
+}
+
+.msg { display: flex; gap: .75rem; align-items: flex-end; animation: fadeIn .3s ease; }
+.msg.user { flex-direction: row-reverse; }
+
+.msg-avatar {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: .8rem;
+}
+.msg-avatar.ai   { background: rgba(59,130,246,.15); border: 1px solid rgba(59,130,246,.3); }
+.msg-avatar.user { background: var(--card); border: 1px solid var(--border); }
+
+.msg-bubble {
+  max-width: 68%; padding: 9px 13px;
+  font-size: .875rem; line-height: 1.65; color: var(--text);
+}
+.msg-bubble.ai   { background: var(--card); border: 1px solid var(--border); border-radius: 12px 12px 12px 4px; }
+.msg-bubble.user { background: rgba(59,130,246,.15); border: 1px solid rgba(59,130,246,.25); border-radius: 12px 12px 4px 12px; }
+
+.msg-ts { font-size: .64rem; color: var(--text3); margin-top: 3px; padding: 0 4px; }
+
+.suggested { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
+.sug-btn {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 4px 13px;
+  font-size: .76rem; color: var(--text2); cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all .15s;
+}
+.sug-btn:hover { border-color: var(--border2); color: var(--text); }
+
+.typing-dots { display: flex; gap: 4px; align-items: center; }
+.typing-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+.chat-input-area {
+  padding: .875rem 1.75rem;
+  border-top: 1px solid var(--border); flex-shrink: 0;
+}
+.chat-input-row {
+  display: flex; gap: .75rem; align-items: flex-end;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 11px; padding: 7px 11px;
+}
+.chat-input-row textarea {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: .875rem; resize: none; line-height: 1.5;
+  max-height: 100px; overflow-y: auto;
+}
+.chat-input-row textarea::placeholder { color: var(--text3); }
+.chat-hint { font-size: .68rem; color: var(--text3); text-align: center; margin-top: 5px; }
+
+/* ============================================================
+   PAGE 5 — REPORTS
+   ============================================================ */
+.reports-main { margin-left: 210px; padding: 1.75rem; min-height: calc(100vh - 60px); }
+
+.section-tabs { display: flex; gap: .5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.sec-tab {
+  padding: 6px 16px; border-radius: 8px;
+  font-size: .8rem; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  border: 1px solid var(--border); background: var(--card);
+  color: var(--text2); transition: all .15s;
+}
+.sec-tab.active { background: rgba(59,130,246,.15); color: var(--accent2); border-color: rgba(59,130,246,.35); }
+
+.rep-section { display: none; }
+.rep-section.active { display: block; }
+.rep-pie-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+
+.hm-legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem; }
+.hm-legend-item { display: flex; align-items: center; gap: 8px; }
+.hm-legend-box { width: 18px; height: 18px; border-radius: 4px; }
+.hm-legend-lbl { font-size: .78rem; color: var(--text2); }
+
+/* ============================================================
+   TOAST NOTIFICATION
+   ============================================================ */
+.toast-container {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  z-index: 9999; display: flex; flex-direction: column; gap: .5rem;
+}
+.toast {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--border2);
+  box-shadow: 0 8px 32px var(--shadow);
+  font-size: .84rem; color: var(--text);
+  animation: slideDown .3s ease;
+  max-width: 300px;
+  transition: opacity .3s;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error   { border-left: 3px solid var(--rose); }
+.toast.info    { border-left: 3px solid var(--accent2); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .sidebar, .chat-layout .sidebar { display: none; }
+  .dash-main, .chat-main, .reports-main { margin-left: 0; }
+  .kpi-grid { grid-template-columns: repeat(2,1fr); }
+  .chart-grid-2 { grid-template-columns: 1fr; }
+  .rep-pie-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .nav-datetime { display: none; }
+}
+@media (max-width: 640px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+  .stats-row { flex-wrap: wrap; }
+  .stat-cell { flex: 1 1 40%; }
+  .nav { padding: 0 1rem; }
+  .hero-title { font-size: 2.2rem; }
+  .nav-clock { display: none; }
+}
+/* ============================================================
+   ANALYTICS SIDE PANEL
+   ============================================================ */
+.analytics-panel {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+  display: none; align-items: flex-start; justify-content: flex-end;
+  padding-top: 60px;
+}
+.analytics-panel.open { display: flex; animation: fadeIn .2s ease; }
+
+.analytics-panel-inner {
+  width: 420px; max-width: 95vw;
+  height: calc(100vh - 60px);
+  background: var(--card);
+  border-left: 1px solid var(--border2);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: slideFromRight .25s ease;
+}
+@keyframes slideFromRight { from{transform:translateX(40px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+.ap-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ap-title { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:800; }
+.ap-sub   { font-size:.75rem; color:var(--text3); margin-top:3px; }
+.ap-close {
+  width:32px;height:32px; border-radius:8px;
+  border:1px solid var(--border); background:var(--bg2);
+  color:var(--text2); font-size:.85rem; cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0; transition:all .15s;
+}
+.ap-close:hover { border-color:var(--border2); color:var(--text); }
+
+.ap-body { flex:1; overflow-y:auto; padding:1.25rem 1.5rem; }
+
+.ap-stat { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:.875rem 1rem; margin-bottom:.75rem; }
+.ap-stat-label { font-size:.68rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.25rem; }
+.ap-stat-value { font-family:'Syne',sans-serif; font-size:1.35rem; font-weight:700; }
+.ap-stat-sub   { font-size:.72rem; color:var(--green); margin-top:.2rem; }
+
+.ap-bar-row { display:flex; align-items:center; gap:.75rem; margin-bottom:.6rem; }
+.ap-bar-label { width:110px; font-size:.78rem; color:var(--text2); flex-shrink:0; text-align:right; }
+.ap-bar-wrap  { flex:1; height:16px; background:var(--bg2); border-radius:4px; overflow:hidden; }
+.ap-bar-fill  { height:100%; border-radius:4px; transition:width .6s ease; }
+.ap-bar-val   { width:72px; font-size:.75rem; font-weight:600; flex-shrink:0; }
+
+.ap-section-title { font-family:'Syne',sans-serif; font-size:.82rem; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.06em; margin:1.1rem 0 .6rem; }
+
+.ap-canvas-wrap { height:200px; margin-bottom:1rem; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-logo" onclick="goPage('home')">
+    <div class="nav-logo-dot"></div>
+    InsightAI
+    <span class="nav-logo-sub">&nbsp;/ Analytics</span>
+  </div>
+  <ul class="nav-links">
+    <li><a id="nl-home"      onclick="goPage('home')"      class="active">Home</a></li>
+    <li><a id="nl-dashboard" onclick="goPage('dashboard')">Dashboard</a></li>
+    <li><a id="nl-chatbot"   onclick="goPage('chatbot')">Chatbot</a></li>
+    <li><a id="nl-reports"   onclick="goPage('reports')">Reports</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <!-- Live Date & Day -->
+    <div class="nav-datetime">
+      <span class="nav-day" id="nav-day">MON</span>
+      <span class="nav-date" id="nav-date">30 Mar 2026</span>
+    </div>
+
+    <!-- Live Clock -->
+    <div class="nav-clock" id="nav-clock">00:00:00</div>
+
+    <!-- Theme Switcher -->
+    <div style="position:relative">
+      <button class="theme-btn" id="theme-toggle-btn" onclick="toggleThemeDropdown()" title="Change theme">🎨</button>
+      <div class="theme-dropdown" id="theme-dropdown">
+        <button class="theme-option active" id="theme-opt-dark"   onclick="setTheme('dark')">  <span class="theme-swatch" style="background:#3b82f6"></span> Dark</button>
+        <button class="theme-option"        id="theme-opt-light"  onclick="setTheme('light')"> <span class="theme-swatch" style="background:#2563eb"></span> Light</button>
+        <button class="theme-option"        id="theme-opt-blue"   onclick="setTheme('blue')">  <span class="theme-swatch" style="background:#38bdf8"></span> Deep Blue</button>
+        <button class="theme-option"        id="theme-opt-purple" onclick="setTheme('purple')"><span class="theme-swatch" style="background:#7c3aed"></span> Purple</button>
+      </div>
+    </div>
+
+    <!-- Auth: Login button (pre-login) -->
+    <a class="btn btn-primary" id="nav-login-btn" style="font-size:.78rem;padding:6px 14px" onclick="goPage('login')">Login</a>
+
+    <!-- Auth: User avatar (post-login) -->
+    <div class="nav-user" id="nav-user-menu" onclick="toggleUserDropdown()">
+      <div class="nav-avatar" id="nav-avatar-icon">A</div>
+      <span id="nav-user-name">Admin</span>
+      <span style="font-size:.7rem;color:var(--text3)">▾</span>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="user-dd-header">
+          <div class="user-dd-name" id="dd-user-name">Admin User</div>
+          <div class="user-dd-email" id="dd-user-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3253565f5b5c725b5c415b555a46535b1c534242">[email&#160;protected]</a></div>
+        </div>
+        <button class="user-dd-item" onclick="goPage('dashboard');closeDropdowns()">▣ Dashboard</button>
+        <button class="user-dd-item" onclick="goPage('reports');closeDropdowns()">◫ Reports</button>
+        <div class="user-dd-divider"></div>
+        <button class="user-dd-item danger" onclick="doLogout()">⬡ Sign Out</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 1 — HOME
+═══════════════════════════════════════════════ -->
+<div id="page-home" class="page active grid-bg">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-orb" style="top:25%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,.07) 0,transparent 70%)"></div>
+    <div class="hero-orb" style="bottom:10%;left:8%;width:280px;height:280px;background:radial-gradient(circle,rgba(34,211,238,.05) 0,transparent 70%)"></div>
+    <div class="hero-orb" style="top:25%;right:8%;width:220px;height:220px;background:radial-gradient(circle,rgba(167,139,250,.05) 0,transparent 70%)"></div>
+
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      AI-Powered Analytics Platform
+    </div>
+
+    <h1 class="hero-title">
+      AI Chatbot <span class="hero-grad">Company Data</span><br>Analysis Platform
+    </h1>
+
+    <p class="hero-sub">
+      A full-stack intelligence platform that turns raw sales records into actionable
+      insights — powered by NLP, ML analytics, and real-time dashboards.
+    </p>
+
+    <div class="hero-btns">
+      <a class="btn btn-primary" style="padding:11px 28px;font-size:.95rem" onclick="goPage('dashboard')">View Dashboard →</a>
+      <a class="btn btn-ghost"   style="padding:11px 28px;font-size:.95rem" onclick="goPage('chatbot')">Try Chatbot</a>
+    </div>
+
+    <!-- Integration module badges -->
+    <div class="integrations-row">
+      <div class="int-badge"><span class="int-dot" style="background:var(--green)"></span>Data Engineering</div>
+      <div class="int-badge"><span class="int-dot" style="background:var(--cyan)"></span>NLP &amp; Intent</div>
+      <div class="int-badge"><span class="int-dot" style="background:var(--amber)"></span>Analytics Engine</div>
+      <div class="int-badge"><span class="int-dot" style="background:var(--accent2)"></span>Visualization Layer</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-cell"><div class="stat-val">2,823</div><div class="stat-lbl">Records</div></div>
+      <div class="stat-cell"><div class="stat-val">$10.03M</div><div class="stat-lbl">Total Revenue</div></div>
+      <div class="stat-cell"><div class="stat-val">92</div><div class="stat-lbl">Customers</div></div>
+      <div class="stat-cell"><div class="stat-val">19</div><div class="stat-lbl">Countries</div></div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features-section">
+    <div style="text-align:center;margin-bottom:2.5rem">
+      <div class="sec-tag">What's included</div>
+      <h2 class="sec-title">Key Features</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card"><div class="feat-icon" style="background:rgba(59,130,246,.12);color:var(--accent)">◉</div><h3>AI Chatbot</h3><p>Natural language queries over your business data. Ask anything, get instant data-backed answers from the NLP engine.</p></div>
+      <div class="feat-card"><div class="feat-icon" style="background:rgba(34,211,238,.12);color:var(--cyan)">◈</div><h3>Smart Analytics</h3><p>Revenue, orders, and customer intelligence surfaced by the ML analytics engine automatically.</p></div>
+      <div class="feat-card"><div class="feat-icon" style="background:rgba(52,211,153,.12);color:var(--green)">▣</div><h3>Live Dashboards</h3><p>Interactive Chart.js charts with real-time filtering by year, category, and region.</p></div>
+      <div class="feat-card"><div class="feat-icon" style="background:rgba(251,191,36,.12);color:var(--amber)">◫</div><h3>Export Reports</h3><p>Download any chart as PNG or export the full dashboard report with one click.</p></div>
+      <div class="feat-card"><div class="feat-icon" style="background:rgba(167,139,250,.12);color:var(--purple)">◎</div><h3>Region Insights</h3><p>EMEA, APAC, Japan and North America performance compared side by side in one view.</p></div>
+      <div class="feat-card"><div class="feat-icon" style="background:rgba(248,113,113,.12);color:var(--rose)">◇</div><h3>Role-based Auth</h3><p>Admin, Analyst and User permissions with Google Sign-In support for seamless access.</p></div>
+      <div class="feat-card"><div class="feat-icon" style="background:rgba(59,130,246,.12);color:var(--accent)">🎨</div><h3>Theme Engine</h3><p>Switch between Dark, Light, Deep Blue, and Purple themes — persisted across sessions.</p></div>
+      <div class="feat-card"><div class="feat-icon" style="background:rgba(34,211,238,.12);color:var(--cyan)">🔗</div><h3>Module Integration</h3><p>Integration-ready API hooks for Data Engineering, NLP, and Analytics modules.</p></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to explore the data?</h2>
+    <p>2,823 sales records · 19 countries · 2003–2005</p>
+    <a class="btn btn-primary" style="padding:13px 32px;font-size:.95rem" onclick="goPage('dashboard')">Get Started →</a>
+  </section>
+
+  <footer class="footer">
+    <span>InsightAI © 2025 — Analytics &amp; Visualization Platform</span>
+    <div class="footer-links">
+      <a onclick="goPage('dashboard')">Dashboard</a>
+      <a onclick="goPage('chatbot')">Chatbot</a>
+      <a onclick="goPage('reports')">Reports</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 2 — LOGIN
+═══════════════════════════════════════════════ -->
+<div id="page-login" class="page grid-bg">
+  <div class="login-wrap">
+    <div class="login-orb" style="top:25%;left:35%;width:450px;height:450px;background:radial-gradient(circle,rgba(59,130,246,.07) 0,transparent 70%)"></div>
+    <div class="login-orb" style="bottom:15%;right:25%;width:300px;height:300px;background:radial-gradient(circle,rgba(167,139,250,.05) 0,transparent 70%)"></div>
+
+    <div class="login-card">
+      <!-- Logo -->
+      <div class="login-logo-wrap">
+        <div class="login-logo"><div class="login-logo-dot"></div>InsightAI</div>
+        <div class="login-sub" id="login-sub">Sign in to your account</div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="login-tabs" id="login-tabs">
+        <button class="login-tab active" onclick="switchLoginTab('login',this)">Log In</button>
+        <button class="login-tab"        onclick="switchLoginTab('signup',this)">Sign Up</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div class="login-form" id="lf-login">
+        <!-- Google Sign-In -->
+        <button class="btn-google" id="btn-google-login" onclick="doGoogleSignIn()">
+          <div class="google-icon"></div>
+          Continue with Google
+        </button>
+
+        <div class="or-divider">or sign in with email</div>
+
+        <div>
+          <label class="lf-label">Email</label>
+          <input class="lf-input" type="email" id="l-user" placeholder="you@company.com" onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+        <div>
+          <label class="lf-label">Password</label>
+          <div class="pw-wrap">
+            <input class="lf-input" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+            <button class="pw-toggle" onclick="togglePw('l-pass',this)">👁</button>
+          </div>
+        </div>
+        <div class="lf-error" id="l-err"></div>
+        <button class="btn-login" id="l-btn" onclick="doLogin()">Sign In</button>
+        <button class="forgot-link" onclick="showForgot()">Forgot your password?</button>
+        <p style="text-align:center;font-size:.78rem;color:var(--text3);margin-top:.25rem">Don't have an account? <button style="background:none;border:none;color:var(--accent2);cursor:pointer;font-size:.78rem;font-family:inherit;padding:0" onclick="switchLoginTab('signup',document.querySelectorAll('.login-tab')[1])">Sign Up</button></p>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div class="login-form" id="lf-signup" style="display:none">
+        <!-- Google Sign-Up -->
+        <button class="btn-google" onclick="doGoogleSignIn()">
+          <div class="google-icon"></div>
+          Sign up with Google
+        </button>
+
+        <div class="or-divider">or create an account</div>
+
+        <div class="lf-row">
+          <div><label class="lf-label">First Name</label><input class="lf-input" type="text" id="su-fname" placeholder="John"/></div>
+          <div><label class="lf-label">Last Name</label> <input class="lf-input" type="text" id="su-lname" placeholder="Doe"/></div>
+        </div>
+        <div><label class="lf-label">Email</label>   <input class="lf-input" type="email" id="su-email" placeholder="you@company.com"/></div>
+        <div><label class="lf-label">Password</label><div class="pw-wrap"><input class="lf-input" type="password" id="su-pass" placeholder="Min. 8 characters"/><button class="pw-toggle" onclick="togglePw('su-pass',this)">👁</button></div></div>
+        <div><label class="lf-label">Confirm Password</label><div class="pw-wrap"><input class="lf-input" type="password" id="su-pass2" placeholder="Repeat password"/><button class="pw-toggle" onclick="togglePw('su-pass2',this)">👁</button></div></div>
+        <div class="lf-error" id="su-err"></div>
+        <button class="btn-login" onclick="doSignUp()">Create Account</button>
+        <p style="text-align:center;font-size:.78rem;color:var(--text3);margin-top:.25rem">Already have an account? <button style="background:none;border:none;color:var(--accent2);cursor:pointer;font-size:.78rem;font-family:inherit;padding:0" onclick="switchLoginTab('login',document.querySelectorAll('.login-tab')[0])">Log In</button></p>
+      </div>
+
+      <!-- FORGOT PANEL -->
+      <div class="forgot-panel" id="lf-forgot">
+        <button class="back-btn" onclick="hideForgot()">← Back to login</button>
+        <h3 style="font-size:.95rem;font-weight:700">Reset Password</h3>
+        <p style="font-size:.8rem;color:var(--text2)">Enter your email and we'll send a reset link.</p>
+        <div class="reset-success" id="reset-ok">✓ Reset link sent! Check your inbox.</div>
+        <div>
+          <label class="lf-label">Email Address</label>
+          <input class="lf-input" type="email" placeholder="you@company.com"/>
+        </div>
+        <button class="btn-login" onclick="sendReset(this)">Send Reset Link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 3 — DASHBOARD
+═══════════════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <div class="dash-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sb-section">
+        <span class="sb-label">Main</span>
+        <div class="sb-item active" onclick="goPage('dashboard')">▣ Dashboard</div>
+        <div class="sb-item" onclick="goPage('reports')">◫ Reports</div>
+        <div class="sb-item" onclick="goPage('chatbot')">◉ Chatbot</div>
+      </div>
+      <div class="sb-section">
+        <span class="sb-label">Analytics</span>
+        <div class="sb-item" id="sb-revenue"    onclick="showAnalyticsPanel('revenue')">◈ Revenue</div>
+        <div class="sb-item" id="sb-categories" onclick="showAnalyticsPanel('categories')">◇ Categories</div>
+        <div class="sb-item" id="sb-regions"    onclick="showAnalyticsPanel('regions')">◎ Regions</div>
+        <div class="sb-item" id="sb-heatmap"    onclick="showAnalyticsPanel('heatmap')">▦ Heatmap</div>
+      </div>
+      <div class="sb-section">
+        <span class="sb-label">Modules</span>
+        <div class="sb-item" id="sb-pipeline"  onclick="showAnalyticsPanel('pipeline')">⬡ Data Pipeline</div>
+        <div class="sb-item" id="sb-nlpengine" onclick="showAnalyticsPanel('nlpengine')">◈ NLP Engine</div>
+        <div class="sb-item" id="sb-mlanalytics" onclick="showAnalyticsPanel('mlanalytics')">◎ ML Analytics</div>
+      </div>
+
+      <!-- Sidebar bottom -->
+      <div class="sb-bottom">
+        <!-- Sidebar User Card -->
+        <div class="sb-user-card" id="sb-user-card" style="display:none">
+          <div class="sb-user-avatar" id="sb-avatar">A</div>
+          <div class="sb-user-name" id="sb-user-name">Admin</div>
+          <div class="sb-user-role" id="sb-user-role">Administrator</div>
+        </div>
+        <div class="sb-section" style="margin-top:.5rem;margin-bottom:0">
+          <span class="sb-label">System</span>
+          <div class="sb-item danger" onclick="doLogout()">⬡ Sign Out</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="dash-main">
+      <!-- Header -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem">
+        <div>
+          <div class="page-title">Analytics Dashboard</div>
+          <div class="page-sub">Sales performance 2003–2005 · 307 orders · 92 customers · 19 countries</div>
+        </div>
+        <span class="status-badge" style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);color:var(--green)">✓ Local data loaded</span>
+      </div>
+
+      <!-- Module Integration Status -->
+      <div class="module-status-bar">
+        <div class="module-chip ready">  <span class="module-chip-dot"></span> Data Engineering — Ready</div>
+        <div class="module-chip ready">  <span class="module-chip-dot"></span> NLP Engine — Ready</div>
+        <div class="module-chip ready">  <span class="module-chip-dot"></span> ML Analytics — Ready</div>
+        <div class="module-chip active"> <span class="module-chip-dot"></span> Visualization — Active</div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-bar">
+        <div class="filter-group">
+          <span class="filter-label">Year</span>
+          <select class="filter-select" id="f-year" onchange="applyFilters()"><option value="">All Years</option><option>2003</option><option>2004</option><option>2005</option></select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Category</span>
+          <select class="filter-select" id="f-cat" onchange="applyFilters()"><option value="">All Categories</option><option>Classic Cars</option><option>Vintage Cars</option><option>Motorcycles</option><option>Trucks &amp; Buses</option><option>Planes</option><option>Ships</option><option>Trains</option></select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Region</span>
+          <select class="filter-select" id="f-region" onchange="applyFilters()"><option value="">All Regions</option><option>EMEA</option><option>North America</option><option>APAC</option><option>Japan</option></select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Deal Size</span>
+          <select class="filter-select" id="f-deal" onchange="applyFilters()"><option value="">All Sizes</option><option>Small</option><option>Medium</option><option>Large</option></select>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-left:auto;align-self:flex-end" onclick="resetFilters()">Reset</button>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card" style="--kpi-clr:#3b82f6">
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-value">$10.03M</div>
+          <div class="kpi-trend">↑ +12.4% growth</div>
+        </div>
+        <div class="kpi-card" style="--kpi-clr:#22d3ee">
+          <div class="kpi-label">Total Orders</div>
+          <div class="kpi-value">307</div>
+          <div class="kpi-trend">↑ +8.1% vs last</div>
+        </div>
+        <div class="kpi-card" style="--kpi-clr:#34d399">
+          <div class="kpi-label">Customers</div>
+          <div class="kpi-value">92</div>
+          <div class="kpi-trend">↑ 19 countries</div>
+        </div>
+        <div class="kpi-card" style="--kpi-clr:#fbbf24">
+          <div class="kpi-label">Top Product</div>
+          <div class="kpi-value sm">Classic Cars</div>
+          <div class="kpi-trend">↑ $3.92M revenue</div>
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="chart-grid-2">
+        <div class="chart-box">
+          <div class="chart-header">Monthly Revenue Trend<button class="dl-btn" onclick="dlChart('c-revenue','monthly-revenue')">↓ PNG</button></div>
+          <div style="height:220px"><canvas id="c-revenue"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-header">Sales by Category<button class="dl-btn" onclick="dlChart('c-category','sales-category')">↓ PNG</button></div>
+          <div style="height:220px"><canvas id="c-category"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="chart-grid-2">
+        <div class="chart-box">
+          <div class="chart-header">Region-wise Performance<button class="dl-btn" onclick="dlChart('c-region','region-performance')">↓ PNG</button></div>
+          <div style="height:220px"><canvas id="c-region"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-header">Deal Size Distribution<button class="dl-btn" onclick="dlChart('c-deal','deal-size')">↓ PNG</button></div>
+          <div style="height:220px"><canvas id="c-deal"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="chart-box" style="margin-bottom:1.1rem">
+        <div class="chart-header">
+          Quarterly Performance Heatmap
+          <div style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--text3);font-weight:400;font-family:'DM Sans',sans-serif">
+            <span style="display:inline-block;width:60px;height:9px;border-radius:2px;background:linear-gradient(90deg,rgba(34,211,153,.5),rgba(239,68,68,.75))"></span>
+            Low → High
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="heatmap-table" id="dash-heatmap"></table>
+        </div>
+      </div>
+
+      <!-- Profit Analysis -->
+      <div class="chart-box">
+        <div class="chart-header">Profit Analysis by Category</div>
+        <div id="profit-bars"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ── Analytics Side Panel ── -->
+  <div id="analytics-panel" class="analytics-panel" onclick="closeAnalyticsPanel(event)">
+    <div class="analytics-panel-inner" onclick="event.stopPropagation()">
+      <div class="ap-header">
+        <div>
+          <div class="ap-title" id="ap-title">Revenue</div>
+          <div class="ap-sub"  id="ap-sub">Detailed breakdown</div>
+        </div>
+        <button class="ap-close" onclick="closeAnalyticsPanel()">✕</button>
+      </div>
+      <div class="ap-body" id="ap-body">
+        <!-- injected by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 4 — CHATBOT
+═══════════════════════════════════════════════ -->
+<div id="page-chatbot" class="page">
+  <div class="chat-layout">
+    <aside class="sidebar">
+      <div class="sb-section">
+        <span class="sb-label">Main</span>
+        <div class="sb-item" onclick="goPage('dashboard')">▣ Dashboard</div>
+        <div class="sb-item" onclick="goPage('reports')">◫ Reports</div>
+        <div class="sb-item active">◉ Chatbot</div>
+      </div>
+      <div class="sb-section">
+        <span class="sb-label">Quick Topics</span>
+        <div class="sb-item" onclick="sendMsg('What is the total revenue?')">◈ Revenue</div>
+        <div class="sb-item" onclick="sendMsg('Top countries by revenue')">◎ Countries</div>
+        <div class="sb-item" onclick="sendMsg('Show region performance')">◇ Regions</div>
+        <div class="sb-item" onclick="sendMsg('Which product sells the most?')">▦ Products</div>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-section" style="margin-bottom:0">
+          <span class="sb-label">System</span>
+          <div class="sb-item danger" onclick="doLogout()">⬡ Sign Out</div>
+        </div>
+      </div>
+    </aside>
+    <div class="chat-main">
+      <div class="chat-header">
+        <h1>AI Data Chatbot</h1>
+        <p>NLP-powered · 2,823 records · 2003–2005 · Integration-ready</p>
+      </div>
+
+      <div class="messages" id="messages">
+        <div class="msg">
+          <div class="msg-avatar ai">◉</div>
+          <div>
+            <div class="msg-bubble ai">👋 Hello! I'm <strong>InsightAI</strong>, your data analyst assistant.<br><br>I have access to <strong>2,823 sales records</strong> across 19 countries (2003–2005). Ask me anything!</div>
+            <div class="msg-ts">InsightAI · Now</div>
+            <div class="suggested" id="sug-btns">
+              <button class="sug-btn" onclick="sendMsg('What is the total revenue?')">Total revenue?</button>
+              <button class="sug-btn" onclick="sendMsg('Which product sells the most?')">Top product?</button>
+              <button class="sug-btn" onclick="sendMsg('Show region performance')">Region performance</button>
+              <button class="sug-btn" onclick="sendMsg('How many customers?')">Customer count</button>
+              <button class="sug-btn" onclick="sendMsg('Top countries by revenue')">Top countries</button>
+              <button class="sug-btn" onclick="sendMsg('Compare deal sizes')">Deal sizes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="chat-input-row">
+          <textarea id="chat-in" rows="1" placeholder="Ask about revenue, products, customers, regions…" onkeydown="chatKey(event)"></textarea>
+          <button class="btn btn-primary" style="padding:7px 14px;font-size:.82rem;flex-shrink:0" onclick="sendMsg()">Send</button>
+        </div>
+        <div class="chat-hint">Enter to send · Shift+Enter for new line</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PAGE 5 — REPORTS
+═══════════════════════════════════════════════ -->
+<div id="page-reports" class="page">
+  <div class="dash-layout">
+    <aside class="sidebar">
+      <div class="sb-section">
+        <span class="sb-label">Main</span>
+        <div class="sb-item" onclick="goPage('dashboard')">▣ Dashboard</div>
+        <div class="sb-item active">◫ Reports</div>
+        <div class="sb-item" onclick="goPage('chatbot')">◉ Chatbot</div>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-section" style="margin-bottom:0">
+          <span class="sb-label">System</span>
+          <div class="sb-item danger" onclick="doLogout()">⬡ Sign Out</div>
+        </div>
+      </div>
+    </aside>
+    <main class="reports-main">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem">
+        <div>
+          <div class="page-title">Data Visualization</div>
+          <div class="page-sub">Detailed charts — click ↓ PNG on any chart to download</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="window.print()">↓ Export Report</button>
+      </div>
+
+      <!-- Section Tabs -->
+      <div class="section-tabs">
+        <button class="sec-tab active" onclick="switchRepTab('bar',this)">▣ Bar Charts</button>
+        <button class="sec-tab"        onclick="switchRepTab('line',this)">◈ Line Charts</button>
+        <button class="sec-tab"        onclick="switchRepTab('pie',this)">◉ Pie Charts</button>
+        <button class="sec-tab"        onclick="switchRepTab('heatmap',this)">▦ Heatmap</button>
+      </div>
+
+      <!-- Bar Charts -->
+      <div class="rep-section active" id="rep-bar">
+        <div class="chart-box" style="margin-bottom:1.1rem">
+          <div class="chart-header">Sales Comparison by Product Category<button class="dl-btn" onclick="dlChart('r-bar1','sales-category')">↓ PNG</button></div>
+          <div style="height:260px"><canvas id="r-bar1"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-header">Revenue by Country (Top 8)<button class="dl-btn" onclick="dlChart('r-bar2','revenue-country')">↓ PNG</button></div>
+          <div style="height:260px"><canvas id="r-bar2"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Line Charts -->
+      <div class="rep-section" id="rep-line">
+        <div class="chart-box" style="margin-bottom:1.1rem">
+          <div class="chart-header">Monthly Revenue Trend (All Years)<button class="dl-btn" onclick="dlChart('r-line1','monthly-trend')">↓ PNG</button></div>
+          <div style="height:260px"><canvas id="r-line1"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-header">Quarterly Trend by Category<button class="dl-btn" onclick="dlChart('r-line2','quarterly-trend')">↓ PNG</button></div>
+          <div style="height:260px"><canvas id="r-line2"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Pie Charts -->
+      <div class="rep-section" id="rep-pie">
+        <div class="rep-pie-grid">
+          <div class="chart-box">
+            <div class="chart-header">Deal Size Distribution<button class="dl-btn" onclick="dlChart('r-pie1','deal-dist')">↓ PNG</button></div>
+            <div style="height:260px"><canvas id="r-pie1"></canvas></div>
+          </div>
+          <div class="chart-box">
+            <div class="chart-header">Revenue by Region<button class="dl-btn" onclick="dlChart('r-pie2','region-pie')">↓ PNG</button></div>
+            <div style="height:260px"><canvas id="r-pie2"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="rep-section" id="rep-heatmap">
+        <div class="chart-box">
+          <div class="chart-header" style="flex-wrap:wrap;gap:.5rem">
+            Quarterly Heatmap — Performance Insights
+            <div style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--text3);font-weight:400;font-family:'DM Sans',sans-serif">
+              <span style="display:inline-block;width:80px;height:9px;border-radius:2px;background:linear-gradient(90deg,rgba(34,211,153,.5),rgba(251,191,36,.6),rgba(239,68,68,.75))"></span>
+              Low → High
+            </div>
+          </div>
+          <div style="overflow-x:auto;margin-top:.5rem">
+            <table class="heatmap-table" id="rep-heatmap-tbl"></table>
+          </div>
+          <div class="hm-legend">
+            <div class="hm-legend-item"><div class="hm-legend-box" style="background:rgba(34,211,153,.45)"></div><span class="hm-legend-lbl">Under $150K — Low</span></div>
+            <div class="hm-legend-item"><div class="hm-legend-box" style="background:rgba(251,191,36,.55)"></div><span class="hm-legend-lbl">$150K–$400K — Medium</span></div>
+            <div class="hm-legend-item"><div class="hm-legend-box" style="background:rgba(251,146,60,.65)"></div><span class="hm-legend-lbl">$400K–$700K — High</span></div>
+            <div class="hm-legend-item"><div class="hm-legend-box" style="background:rgba(239,68,68,.75)"></div><span class="hm-legend-lbl">Over $700K — Peak</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────
+   DATA
+───────────────────────────────────────────── */
+const DS = {
+  monthly:{
+    labels:["Jan'03","Feb'03","Mar'03","Apr'03","May'03","Jun'03","Jul'03","Aug'03","Sep'03","Oct'03","Nov'03","Dec'03","Jan'04","Feb'04","Mar'04","Apr'04","May'04","Jun'04","Jul'04","Aug'04","Sep'04","Oct'04","Nov'04","Dec'04","Jan'05","Feb'05","Mar'05","Apr'05","May'05"],
+    vals:[129753,140836,174504,201609,192673,168082,187731,197809,263973,568290,1029837,261876,205738,162062,172000,205953,173146,168244,187731,197809,263973,552924,1089048,261876,155818,159811,190685,166765,192673]
+  },
+  category:{ labels:['Classic Cars','Vintage Cars','Motorcycles','Trucks & Buses','Planes','Ships','Trains'], vals:[3919615,1903150,1166388,1127789,975003,714437,226243] },
+  region:  { labels:['EMEA','North America','APAC','Japan'], vals:[4979272,3852061,746121,455173] },
+  country: { labels:['USA','Spain','France','Australia','UK','Italy','Finland','Norway'], vals:[3627982,1215686,1110916,630623,478880,374674,329581,307463] },
+  deal:    { labels:['Medium','Small','Large'], vals:[6087432,2643077,1302119] },
+  heatmap: {
+    rows:['Classic Cars','Vintage Cars','Motorcycles','Trucks & Buses','Planes'],
+    cols:['Q1','Q2','Q3','Q4'],
+    vals:[[320000,410000,390000,980000],[155000,190000,210000,520000],[95000,110000,130000,310000],[92000,105000,118000,290000],[75000,89000,95000,240000]]
+  },
+  profit:[
+    {l:'Classic Cars',v:1175884,c:'#3b82f6'},{l:'Vintage Cars',v:571945,c:'#22d3ee'},
+    {l:'Motorcycles', v:349916,c:'#34d399'},{l:'Trucks & Buses',v:338336,c:'#fbbf24'},
+    {l:'Planes',      v:292501,c:'#a78bfa'},{l:'Ships',        v:214331,c:'#f87171'},
+    {l:'Trains',      v:67873, c:'#fb923c'}
+  ],
+  quarterly:{
+    labels:['2003 Q1','2003 Q2','2003 Q3','2003 Q4','2004 Q1','2004 Q2','2004 Q3','2004 Q4','2005 Q1','2005 Q2'],
+    classic:[320000,395000,380000,980000,360000,420000,400000,1010000,210000,190000],
+    vintage:[155000,185000,200000,520000,160000,195000,215000,550000,105000,95000],
+    motos:  [95000,108000,125000,310000,100000,115000,132000,325000,65000,60000]
+  }
+};
+
+const PAL = ['#3b82f6','#22d3ee','#34d399','#fbbf24','#a78bfa','#f87171','#fb923c'];
+const fmt = v => v>=1e6?`$${(v/1e6).toFixed(2)}M`:v>=1e3?`$${(v/1e3).toFixed(1)}K`:`$${v}`;
+
+/* ─────────────────────────────────────────────
+   CHART BASE OPTIONS
+───────────────────────────────────────────── */
+const BASE = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{
+    legend:{display:false},
+    tooltip:{backgroundColor:'#141e30',borderColor:'rgba(99,179,237,.2)',borderWidth:1,titleColor:'#e2e8f0',bodyColor:'#94a3b8',padding:10}
+  },
+  scales:{
+    x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:10}}},
+    y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:10},callback:v=>fmt(v)}}
+  }
+};
+const PIE_OPT = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{
+    legend:{position:'right',labels:{color:'#94a3b8',font:{size:11},padding:14,boxWidth:12}},
+    tooltip:{backgroundColor:'#141e30',borderColor:'rgba(99,179,237,.2)',borderWidth:1,titleColor:'#e2e8f0',bodyColor:'#94a3b8',padding:10}
+  }
+};
+
+/* ─────────────────────────────────────────────
+   DATE / TIME CLOCK
+───────────────────────────────────────────── */
+const DAYS  = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const MONTHS= ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function updateClock() {
+  const now = new Date();
+  const d = document.getElementById('nav-day');
+  const dt = document.getElementById('nav-date');
+  const cl = document.getElementById('nav-clock');
+  if(d)  d.textContent  = DAYS[now.getDay()];
+  if(dt) dt.textContent = `${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+  if(cl) {
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    const ss = String(now.getSeconds()).padStart(2,'0');
+    cl.textContent = `${hh}:${mm}:${ss}`;
+  }
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+/* ─────────────────────────────────────────────
+   TOAST NOTIFICATIONS  (defined early — used by setTheme)
+───────────────────────────────────────────── */
+function showToast(msg, type='info') {
+  const c = document.getElementById('toast-container');
+  if(!c) return;
+  const t = document.createElement('div');
+  const icons = {success:'✓', error:'✕', info:'ℹ'};
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${icons[type]||'ℹ'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2800);
+}
+
+/* ─────────────────────────────────────────────
+   PAGE NAVIGATION  (defined early — used by setTheme & init)
+───────────────────────────────────────────── */
+const PAGES = ['home','login','dashboard','chatbot','reports'];
+let dashInited = false;
+let repInited  = {};
+
+function closeDropdowns() {
+  document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+}
+
+// Internal navigation (no auth check)
+function goPageNoAuth(id) {
+  PAGES.forEach(p => {
+    const pg = document.getElementById('page-'+p);
+    if(pg) pg.classList.toggle('active', p===id);
+    const nl = document.getElementById('nl-'+p);
+    if(nl) nl.classList.toggle('active', p===id);
+  });
+  closeDropdowns();
+  window.scrollTo(0,0);
+  if(id==='dashboard' && !dashInited){ initDash(); dashInited=true; }
+  if(id==='reports')  initReports();
+}
+
+function goPage(id) {
+  const protectedPages = ['dashboard','chatbot','reports'];
+  if(protectedPages.includes(id) && !authUser) {
+    showToast('Please sign in to access this page.', 'info');
+    goPageNoAuth('login');
+    return;
+  }
+  goPageNoAuth(id);
+}
+
+/* ─────────────────────────────────────────────
+   THEME ENGINE
+───────────────────────────────────────────── */
+let currentTheme = localStorage.getItem('insightai-theme') || 'dark';
+
+function setTheme(theme, silent) {
+  currentTheme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('insightai-theme', theme);
+  document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+  const opt = document.getElementById('theme-opt-'+theme);
+  if(opt) opt.classList.add('active');
+  closeDropdowns();
+  const icons = {dark:'🌙', light:'☀️', blue:'🌊', purple:'🔮'};
+  const tb = document.getElementById('theme-toggle-btn');
+  if(tb) tb.textContent = icons[theme] || '🎨';
+  if(!silent) showToast(`Theme switched to ${theme.charAt(0).toUpperCase()+theme.slice(1)}`, 'info');
+}
+
+function toggleThemeDropdown() {
+  const dd = document.getElementById('theme-dropdown');
+  const ud = document.getElementById('user-dropdown');
+  if(ud) ud.classList.remove('open');
+  if(dd) dd.classList.toggle('open');
+}
+
+// Init theme silently (no toast on page load)
+setTheme(currentTheme, true);
+
+// ─── START ON LOGIN PAGE ───
+goPageNoAuth('login');
+
+/* ─────────────────────────────────────────────
+   AUTH STATE
+───────────────────────────────────────────── */
+let authUser = null;
+
+function setLoggedIn(user) {
+  authUser = user;
+  // Nav: hide login btn, show user menu
+  document.getElementById('nav-login-btn').style.display = 'none';
+  const um = document.getElementById('nav-user-menu');
+  um.classList.add('visible');
+  document.getElementById('nav-user-name').textContent = user.name.split(' ')[0];
+  // Avatar: use Google picture if available, else initials
+  const navAv = document.getElementById('nav-avatar-icon');
+  if(user.picture) {
+    navAv.innerHTML = `<img src="${user.picture}" alt="${user.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+  } else {
+    navAv.textContent = user.name.charAt(0).toUpperCase();
+  }
+  document.getElementById('dd-user-name').textContent  = user.name;
+  document.getElementById('dd-user-email').textContent = user.email;
+  // Sidebar user card
+  const sc = document.getElementById('sb-user-card');
+  if(sc){ sc.style.display='block'; }
+  document.getElementById('sb-user-name').textContent = user.name;
+  document.getElementById('sb-user-role').textContent = user.role;
+  const sbAv = document.getElementById('sb-avatar');
+  if(user.picture) {
+    sbAv.style.background = 'none';
+    sbAv.innerHTML = `<img src="${user.picture}" alt="${user.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+  } else {
+    sbAv.textContent = user.name.charAt(0).toUpperCase();
+  }
+}
+
+function doLogout() {
+  authUser = null;
+  closeDropdowns();
+  document.getElementById('nav-login-btn').style.display = '';
+  document.getElementById('nav-user-menu').classList.remove('visible');
+  const sc = document.getElementById('sb-user-card');
+  if(sc) sc.style.display = 'none';
+  goPageNoAuth('login');
+  showToast('You have been signed out.', 'info');
+}
+
+// closeDropdowns is defined earlier in the script
+
+function toggleUserDropdown() {
+  const ud = document.getElementById('user-dropdown');
+  const td = document.getElementById('theme-dropdown');
+  td.classList.remove('open');
+  ud.classList.toggle('open');
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', e => {
+  if(!e.target.closest('.theme-btn') && !e.target.closest('.theme-dropdown')) {
+    document.getElementById('theme-dropdown').classList.remove('open');
+  }
+  if(!e.target.closest('.nav-user')) {
+    document.getElementById('user-dropdown').classList.remove('open');
+  }
+});
+
+/* ─────────────────────────────────────────────
+   USER STORE  (localStorage — no hardcoded creds)
+───────────────────────────────────────────── */
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem('insightai-users') || '{}'); } catch{ return {}; }
+}
+function saveUsers(users) {
+  localStorage.setItem('insightai-users', JSON.stringify(users));
+}
+
+/* ─────────────────────────────────────────────
+   LOGIN LOGIC
+───────────────────────────────────────────── */
+function switchLoginTab(t, btn) {
+  document.querySelectorAll('.login-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('lf-login').style.display  = t==='login'  ? 'flex':'none';
+  document.getElementById('lf-signup').style.display = t==='signup' ? 'flex':'none';
+  document.getElementById('lf-forgot').style.display = 'none';
+  document.getElementById('login-sub').textContent   = t==='login' ? 'Sign in to your account' : 'Create a new account';
+  // Clear errors
+  const le = document.getElementById('l-err');   if(le) le.style.display='none';
+  const se = document.getElementById('su-err');  if(se) se.style.display='none';
+}
+
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  if(inp.type==='password'){ inp.type='text'; btn.textContent='🙈'; }
+  else { inp.type='password'; btn.textContent='👁'; }
+}
+
+function doLogin() {
+  const email = (document.getElementById('l-user').value || '').trim().toLowerCase();
+  const pass  = (document.getElementById('l-pass').value || '').trim();
+  const err   = document.getElementById('l-err');
+  if(!email || !pass) { err.textContent='Please enter your email and password.'; err.style.display='block'; return; }
+  const users = getUsers();
+  const user  = users[email];
+  if(!user) { err.textContent='No account found for this email. Please sign up first.'; err.style.display='block'; return; }
+  if(user.pass !== pass) { err.textContent='Incorrect password. Please try again.'; err.style.display='block'; return; }
+  err.style.display='none';
+  setLoggedIn({ name: user.name, email: email, role: user.role || 'Member' });
+  showToast(`Welcome back, ${user.name.split(' ')[0]}! 👋`, 'success');
+  goPageNoAuth('home');
+}
+
+function doSignUp() {
+  const fname  = (document.getElementById('su-fname')?.value || '').trim();
+  const lname  = (document.getElementById('su-lname')?.value || '').trim();
+  const email  = (document.getElementById('su-email')?.value || '').trim().toLowerCase();
+  const pass   = (document.getElementById('su-pass')?.value || '').trim();
+  const pass2  = (document.getElementById('su-pass2')?.value || '').trim();
+  const err    = document.getElementById('su-err');
+
+  if(!fname)          { err.textContent='Please enter your first name.';          err.style.display='block'; return; }
+  if(!email)          { err.textContent='Please enter a valid email address.';    err.style.display='block'; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent='Please enter a valid email address.'; err.style.display='block'; return; }
+  if(pass.length < 8) { err.textContent='Password must be at least 8 characters.'; err.style.display='block'; return; }
+  if(pass !== pass2)  { err.textContent='Passwords do not match.';                 err.style.display='block'; return; }
+
+  const users = getUsers();
+  if(users[email])    { err.textContent='An account with this email already exists. Please log in.'; err.style.display='block'; return; }
+
+  const fullName = lname ? `${fname} ${lname}` : fname;
+  users[email] = { name: fullName, pass: pass, role: 'Member' };
+  saveUsers(users);
+
+  err.style.display='none';
+  // Clear form
+  ['su-fname','su-lname','su-email','su-pass','su-pass2'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+
+  setLoggedIn({ name: fullName, email: email, role: 'Member' });
+  showToast(`Account created! Welcome, ${fname}! 🎉`, 'success');
+  goPageNoAuth('home');
+}
+
+/* ── Google Sign-In (Real OAuth via Google Identity Services) ── */
+const GOOGLE_CLIENT_ID = '986841798542-t7eu3o8t0g9lmlshug1m1flue6dt8837.apps.googleusercontent.com';
+
+function initGoogleSignIn() {
+  if(typeof google === 'undefined' || !google.accounts) return;
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredential,
+    auto_select: false,
+    cancel_on_tap_outside: true,
+    ux_mode: 'popup'
+  });
+}
+
+function doGoogleSignIn() {
+  if(typeof google === 'undefined' || !google.accounts) {
+    showToast('Google SDK not loaded. Check your internet connection.', 'error');
+    return;
+  }
+  // Use renderButton approach via a hidden container for popup flow
+  google.accounts.id.prompt(notification => {
+    if(notification.isNotDisplayed() || notification.isSkippedMoment()) {
+      // One-tap not available — fall back to popup via renderButton click
+      const tmp = document.createElement('div');
+      tmp.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+      document.body.appendChild(tmp);
+      google.accounts.id.renderButton(tmp, {
+        type: 'standard', theme: 'outline', size: 'large'
+      });
+      const btn = tmp.querySelector('div[role="button"]') || tmp.firstElementChild;
+      if(btn) btn.click();
+      setTimeout(() => tmp.remove(), 3000);
+    }
+  });
+}
+
+function handleGoogleCredential(response) {
+  function parseJwt(token) {
+    try {
+      const base64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+      const pad = base64.length % 4 ? base64 + '='.repeat(4 - base64.length % 4) : base64;
+      return JSON.parse(atob(pad));
+    } catch(e) { return null; }
+  }
+  const decoded = parseJwt(response.credential);
+  if(!decoded) { showToast('Google sign-in failed. Please try again.', 'error'); return; }
+
+  const name    = decoded.name    || decoded.given_name || 'Google User';
+  const email   = decoded.email   || '';
+  const picture = decoded.picture || '';
+
+  const users = getUsers();
+  if(!users[email]) {
+    users[email] = { name, pass: '__google__', role: 'Member', picture };
+    saveUsers(users);
+  }
+  setLoggedIn({ name, email, role: users[email].role || 'Member', picture });
+  showToast(`Welcome, ${name.split(' ')[0]}! Signed in with Google ✓`, 'success');
+  goPageNoAuth('home');
+}
+
+// Load Google Identity Services SDK
+(function loadGoogleSDK() {
+  if(document.getElementById('google-gsi-script')) return;
+  const s = document.createElement('script');
+  s.id  = 'google-gsi-script';
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.async = true;
+  s.defer = true;
+  s.onload = initGoogleSignIn;
+  s.onerror = () => console.warn('Google GSI SDK failed to load.');
+  document.head.appendChild(s);
+})();
+
+// Google SDK not required for demo mode
+
+function showForgot() {
+  document.getElementById('lf-login').style.display  = 'none';
+  document.getElementById('lf-signup').style.display = 'none';
+  document.getElementById('login-tabs').style.display= 'none';
+  document.getElementById('lf-forgot').style.display = 'flex';
+  document.getElementById('login-sub').textContent   = 'Reset your password';
+}
+
+function hideForgot() {
+  document.getElementById('lf-forgot').style.display = 'none';
+  document.getElementById('login-tabs').style.display= 'flex';
+  document.getElementById('lf-login').style.display  = 'flex';
+  document.getElementById('login-sub').textContent   = 'Sign in to your account';
+  document.getElementById('reset-ok').style.display  = 'none';
+}
+
+function sendReset(btn) {
+  btn.textContent='Sending…'; btn.disabled=true;
+  setTimeout(()=>{ document.getElementById('reset-ok').style.display='block'; btn.textContent='Send Reset Link'; btn.disabled=false; }, 900);
+}
+
+/* ─────────────────────────────────────────────
+   HEATMAP
+───────────────────────────────────────────── */
+function heatColor(v, mn, mx) {
+  const t=(v-mn)/(mx-mn);
+  if(t<.25)  return `rgba(34,211,153,${.25+t})`;
+  if(t<.5)   return `rgba(251,191,36,${.3+t*.5})`;
+  if(t<.75)  return `rgba(251,146,60,${.35+t*.4})`;
+  return `rgba(239,68,68,${.4+t*.5})`;
+}
+
+function buildHeatmap(tableId, withTotal) {
+  const d=DS.heatmap, flat=d.vals.flat();
+  const mn=Math.min(...flat), mx=Math.max(...flat);
+  const tbl=document.getElementById(tableId);
+  if(!tbl) return;
+  let html='<thead><tr><th style="text-align:left;font-size:.7rem;color:var(--text3);font-weight:600;padding:4px 8px">Product Line</th>';
+  d.cols.forEach(c=>html+=`<th style="font-size:.7rem;color:var(--text3);font-weight:600;padding:4px 8px;text-align:center;min-width:90px">${c}</th>`);
+  if(withTotal) html+=`<th style="font-size:.7rem;color:var(--text3);font-weight:600;padding:4px 8px;text-align:center">Total</th>`;
+  html+='</tr></thead><tbody>';
+  d.rows.forEach((row,ri)=>{
+    const total=d.vals[ri].reduce((a,b)=>a+b,0);
+    html+=`<tr><td class="row-lbl" style="font-size:.82rem;color:var(--text);font-weight:600;padding:4px 8px;white-space:nowrap">${row}</td>`;
+    d.vals[ri].forEach(v=>{
+      html+=`<td class="hm-cell" style="background:${heatColor(v,mn,mx)}" title="${fmt(v)}">$${(v/1000).toFixed(0)}K</td>`;
+    });
+    if(withTotal) html+=`<td style="font-size:.8rem;color:var(--accent2);font-weight:700;text-align:center;padding:6px 10px">$${(total/1000).toFixed(0)}K</td>`;
+    html+='</tr>';
+  });
+  html+='</tbody>';
+  tbl.innerHTML=html;
+}
+
+/* ─────────────────────────────────────────────
+   DASHBOARD INIT
+───────────────────────────────────────────── */
+function initDash_old_replaced() {
+  // Replaced by reactive initDash below — stores chart references for live filter updates
+}
+
+/* ─────────────────────────────────────────────
+   REPORTS INIT
+───────────────────────────────────────────── */
+function initReports() {
+  if(!repInited['bar']) {
+    new Chart(document.getElementById('r-bar1'),{type:'bar',data:{labels:DS.category.labels,datasets:[{data:DS.category.vals,backgroundColor:PAL,borderRadius:7,borderSkipped:false}]},options:BASE});
+    new Chart(document.getElementById('r-bar2'),{type:'bar',data:{labels:DS.country.labels,datasets:[{data:DS.country.vals,backgroundColor:'rgba(59,130,246,.75)',borderRadius:6,borderSkipped:false,hoverBackgroundColor:'#3b82f6'}]},options:BASE});
+    repInited['bar']=true;
+  }
+}
+
+function switchRepTab(id, btn) {
+  document.querySelectorAll('.rep-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sec-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('rep-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(!repInited[id]) {
+    if(id==='line') {
+      new Chart(document.getElementById('r-line1'),{type:'line',data:{labels:DS.monthly.labels,datasets:[{label:'Revenue',data:DS.monthly.vals,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.07)',fill:true,tension:.4,pointRadius:2}]},options:BASE});
+      new Chart(document.getElementById('r-line2'),{type:'line',data:{labels:DS.quarterly.labels,datasets:[
+        {label:'Classic Cars',data:DS.quarterly.classic,borderColor:'#3b82f6',tension:.4,fill:false,pointRadius:3},
+        {label:'Vintage Cars', data:DS.quarterly.vintage,borderColor:'#22d3ee',tension:.4,fill:false,pointRadius:3},
+        {label:'Motorcycles',  data:DS.quarterly.motos,  borderColor:'#34d399',tension:.4,fill:false,pointRadius:3}
+      ]},options:{...BASE,plugins:{...BASE.plugins,legend:{display:true,labels:{color:'#94a3b8',font:{size:11},boxWidth:12}}}}});
+    }
+    if(id==='pie') {
+      new Chart(document.getElementById('r-pie1'),{type:'pie',    data:{labels:DS.deal.labels,  datasets:[{data:DS.deal.vals,  backgroundColor:['#3b82f6','#22d3ee','#34d399'],borderWidth:0,hoverOffset:8}]},options:PIE_OPT});
+      new Chart(document.getElementById('r-pie2'),{type:'doughnut',data:{labels:DS.region.labels,datasets:[{data:DS.region.vals,backgroundColor:PAL,borderWidth:0,hoverOffset:8}]},options:PIE_OPT});
+    }
+    if(id==='heatmap') buildHeatmap('rep-heatmap-tbl', true);
+    repInited[id]=true;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   DOWNLOAD CHART
+───────────────────────────────────────────── */
+function dlChart(id, name) {
+  const c=document.getElementById(id);
+  if(!c) return;
+  const a=document.createElement('a'); a.href=c.toDataURL('image/png'); a.download=name+'.png'; a.click();
+  showToast(`Chart downloaded as ${name}.png`, 'success');
+}
+
+/* ─────────────────────────────────────────────
+   CHATBOT
+───────────────────────────────────────────── */
+const NLP = {
+  revenue: '📊 <strong>Total Revenue: $10.03M</strong><br>• Classic Cars: $3.92M<br>• Vintage Cars: $1.90M<br>• Motorcycles: $1.17M<br>• Trucks & Buses: $1.13M',
+  orders:  '🛒 <strong>Total Orders: 307</strong><br>Average order value: $32,674<br>Total quantity: 99,067 units',
+  customer:'👥 <strong>92 unique customers</strong> across 19 countries',
+  region:  '🌍 <strong>Region Performance:</strong><br>• EMEA: $4.98M (49.6%)<br>• North America: $3.85M (38.4%)<br>• APAC: $746K (7.4%)<br>• Japan: $455K (4.5%)',
+  product: '🏆 <strong>Top: Classic Cars — $3.92M</strong><br>• Vintage Cars: $1.90M<br>• Motorcycles: $1.17M<br>• Trucks & Buses: $1.13M<br>• Planes: $975K',
+  deal:    '📦 <strong>Deal Sizes:</strong><br>• Medium: $6.09M (60.7%)<br>• Small: $2.64M (26.3%)<br>• Large: $1.30M (13.0%)',
+  country: '🌐 <strong>Top Countries:</strong><br>1. USA: $3.63M<br>2. Spain: $1.22M<br>3. France: $1.11M<br>4. Australia: $631K<br>5. UK: $479K',
+  default: '🤖 Ask about:<br>• Revenue · Orders · Customers<br>• Products · Regions · Countries · Deal sizes'
+};
+
+function getAnswer(q) {
+  const l=q.toLowerCase();
+  if(l.includes('revenue')&&!l.includes('region')&&!l.includes('country')) return NLP.revenue;
+  if(l.includes('order'))   return NLP.orders;
+  if(l.includes('customer'))return NLP.customer;
+  if(l.includes('region')||l.includes('territory')) return NLP.region;
+  if(l.includes('product')||l.includes('categor'))  return NLP.product;
+  if(l.includes('deal')||l.includes('size'))  return NLP.deal;
+  if(l.includes('country')||l.includes('usa'))return NLP.country;
+  return NLP.default;
+}
+
+/*
+ * ── INTEGRATION HOOK — NLP Engine ──
+ * Replace getAnswer() with an API call to the NLP endpoint:
+ *
+ * async function getAnswerFromAPI(q) {
+ *   const res = await fetch('http://nlp-api/query', {
+ *     method: 'POST',
+ *     headers: { 'Content-Type': 'application/json' },
+ *     body: JSON.stringify({ query: q })
+ *   });
+ *   const data = await res.json();
+ *   return data.response;
+ * }
+ */
+
+function appendMsg(role, html) {
+  const sug=document.getElementById('sug-btns');
+  if(sug) sug.remove();
+  const msgs=document.getElementById('messages');
+  const ts=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div');
+  d.className='msg'+(role==='user'?' user':'');
+  d.innerHTML=`<div class="msg-avatar ${role==='user'?'user':'ai'}">${role==='user'?'👤':'◉'}</div><div><div class="msg-bubble ${role==='user'?'user':'ai'}">${html}</div><div class="msg-ts">${role==='user'?'You':'InsightAI'} · ${ts}</div></div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs=document.getElementById('messages');
+  const d=document.createElement('div');
+  d.id='typing'; d.className='msg';
+  d.innerHTML=`<div class="msg-avatar ai">◉</div><div class="msg-bubble ai"><div class="typing-dots"><span class="typing-dot" style="animation:blink 1.2s ease 0s infinite"></span><span class="typing-dot" style="animation:blink 1.2s ease .2s infinite"></span><span class="typing-dot" style="animation:blink 1.2s ease .4s infinite"></span></div></div>`;
+  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+}
+
+async function sendMsg(preset) {
+  const inp=document.getElementById('chat-in');
+  const txt=(preset||inp.value).trim();
+  if(!txt) return;
+  inp.value='';
+  appendMsg('user', txt.replace(/</g,'&lt;'));
+  showTyping();
+  await new Promise(r=>setTimeout(r,700+Math.random()*500));
+  document.getElementById('typing')?.remove();
+  appendMsg('assistant', getAnswer(txt));
+}
+
+function chatKey(e) { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMsg(); } }
+
+/*
+ * ── INTEGRATION HOOKS — Other Modules ──
+ *
+ * Data Engineering — Replace DS object with live API:
+ * async function loadDataFromAPI() {
+ *   const res = await fetch('http://data-api/sales');
+ *   const data = await res.json();
+ *   Object.assign(DS, data);
+ * }
+ *
+ * Analytics Engine — Replace KPI values with API response:
+ * async function getKPIs() {
+ *   const res = await fetch('http://analytics-api/kpis');
+ *   const data = await res.json();
+ *   // update KPI cards with data
+ * }
+ */
+
+/* ─────────────────────────────────────────────
+   REACTIVE FILTER ENGINE
+───────────────────────────────────────────── */
+
+// Per-year data slices
+const DS_YEAR = {
+  '2003': {
+    monthly: { labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], vals:[129753,140836,174504,201609,192673,168082,187731,197809,263973,568290,1029837,261876] },
+    category:{ labels:['Classic Cars','Vintage Cars','Motorcycles','Trucks & Buses','Planes','Ships','Trains'], vals:[1320000,640000,390000,380000,320000,240000,76000] },
+    region:  { labels:['EMEA','North America','APAC','Japan'], vals:[1650000,1280000,252000,185000] },
+    deal:    { labels:['Medium','Small','Large'], vals:[2043000,887000,437000] },
+    kpi:     { rev:'$3.37M', orders:145, customers:82, top:'Classic Cars', topRev:'$1.32M' }
+  },
+  '2004': {
+    monthly: { labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], vals:[205738,162062,172000,205953,173146,168244,187731,197809,263973,552924,1089048,261876] },
+    category:{ labels:['Classic Cars','Vintage Cars','Motorcycles','Trucks & Buses','Planes','Ships','Trains'], vals:[1580000,760000,470000,454000,392000,288000,91000] },
+    region:  { labels:['EMEA','North America','APAC','Japan'], vals:[2010000,1552000,300000,183000] },
+    deal:    { labels:['Medium','Small','Large'], costs:[2452000,1063000,524000] },
+    kpi:     { rev:'$4.04M', orders:136, customers:76, top:'Classic Cars', topRev:'$1.58M' }
+  },
+  '2005': {
+    monthly: { labels:["Jan","Feb","Mar","Apr","May","Jun"], vals:[155818,159811,190685,166765,192673,755874] },
+    category:{ labels:['Classic Cars','Vintage Cars','Motorcycles','Trucks & Buses','Planes','Ships','Trains'], vals:[1019615,503150,306388,293789,263003,186437,59243] },
+    region:  { labels:['EMEA','North America','APAC','Japan'], vals:[1319272,1020061,194121,87173] },
+    deal:    { labels:['Medium','Small','Large'], vals:[1592432,693077,341119] },
+    kpi:     { rev:'$2.62M', orders:26, customers:47, top:'Classic Cars', topRev:'$1.02M' }
+  }
+};
+
+// Per-category filters
+const CAT_REVENUE = {
+  'Classic Cars':    { rev:'$3.92M', pct:39.1, trend:'+14.2%' },
+  'Vintage Cars':    { rev:'$1.90M', pct:18.9, trend:'+9.3%' },
+  'Motorcycles':     { rev:'$1.17M', pct:11.6, trend:'+6.1%' },
+  'Trucks & Buses':  { rev:'$1.13M', pct:11.2, trend:'+3.8%' },
+  'Planes':          { rev:'$975K',  pct:9.7,  trend:'+5.2%' },
+  'Ships':           { rev:'$714K',  pct:7.1,  trend:'-1.4%' },
+  'Trains':          { rev:'$226K',  pct:2.2,  trend:'+0.9%' }
+};
+
+const REGION_REVENUE = {
+  'EMEA':          { rev:'$4.98M', pct:49.6, orders:153, trend:'+15.1%' },
+  'North America': { rev:'$3.85M', pct:38.4, orders:119, trend:'+10.8%' },
+  'APAC':          { rev:'$746K',  pct:7.4,  orders:23,  trend:'+4.2%' },
+  'Japan':         { rev:'$455K',  pct:4.5,  orders:12,  trend:'+2.9%' }
+};
+
+const DEAL_REVENUE = {
+  'Small':  { rev:'$2.64M', pct:26.3, avg:'$18.2K', trend:'+5.3%' },
+  'Medium': { rev:'$6.09M', pct:60.7, avg:'$38.5K', trend:'+13.2%' },
+  'Large':  { rev:'$1.30M', pct:13.0, avg:'$93.4K', trend:'+8.6%' }
+};
+
+let dashCharts = {};
+
+function getFilteredData() {
+  const year   = document.getElementById('f-year')?.value   || '';
+  const cat    = document.getElementById('f-cat')?.value    || '';
+  const region = document.getElementById('f-region')?.value || '';
+  const deal   = document.getElementById('f-deal')?.value   || '';
+
+  let monthly  = {...DS.monthly};
+  let category = {...DS.category};
+  let regionD  = {...DS.region};
+  let dealD    = {...DS.deal};
+  let kpi = { rev:'$10.03M', orders:307, customers:92, top:'Classic Cars', topRev:'$3.92M', growth:'+12.4%', ordGrowth:'+8.1%', countries:'19 countries' };
+
+  // Year filter
+  if(year && DS_YEAR[year]) {
+    const y = DS_YEAR[year];
+    monthly  = y.monthly;
+    category = y.category;
+    regionD  = y.region;
+    dealD    = y.deal || DS.deal;
+    kpi = { rev:y.kpi.rev, orders:y.kpi.orders, customers:y.kpi.customers, top:y.kpi.top, topRev:y.kpi.topRev, growth:'+12.4%', ordGrowth:'+8.1%', countries:'19 countries' };
+  }
+
+  // Category filter — scale down other datasets proportionally
+  if(cat && CAT_REVENUE[cat]) {
+    const info = CAT_REVENUE[cat];
+    const scale = info.pct / 100;
+    monthly  = { labels: monthly.labels, vals: monthly.vals.map(v => Math.round(v * scale)) };
+    category = { labels: [cat], vals: [Math.round(DS.category.vals[DS.category.labels.indexOf(cat)] * (year ? 0.33 : 1))] };
+    regionD  = { labels: regionD.labels, vals: regionD.vals.map(v => Math.round(v * scale)) };
+    dealD    = { labels: dealD.labels, vals: (dealD.vals||DS.deal.vals).map(v => Math.round(v * scale)) };
+    kpi      = { rev: info.rev, orders: Math.round(307 * scale), customers: Math.round(92 * scale) || 1, top: cat, topRev: info.rev, growth: info.trend, ordGrowth: info.trend, countries:'19 countries' };
+  }
+
+  // Region filter
+  if(region && REGION_REVENUE[region]) {
+    const info = REGION_REVENUE[region];
+    const scale = info.pct / 100;
+    monthly  = { labels: monthly.labels, vals: monthly.vals.map(v => Math.round(v * scale)) };
+    dealD    = { labels: dealD.labels, vals: (dealD.vals||DS.deal.vals).map(v => Math.round(v * scale)) };
+    regionD  = { labels:[region], vals: [Math.round((year && DS_YEAR[year] ? DS_YEAR[year].region.vals[DS_YEAR[year].region.labels.indexOf(region)] : DS.region.vals[DS.region.labels.indexOf(region)]) || info.pct*100000)] };
+    kpi      = { rev: info.rev, orders: info.orders, customers: Math.round(92 * scale) || 1, top: cat||'Classic Cars', topRev: cat ? CAT_REVENUE[cat||'Classic Cars'].rev : '$3.92M', growth: info.trend, ordGrowth: info.trend, countries: region };
+  }
+
+  // Deal size filter
+  if(deal && DEAL_REVENUE[deal]) {
+    const info = DEAL_REVENUE[deal];
+    const scale = info.pct / 100;
+    monthly  = { labels: monthly.labels, vals: monthly.vals.map(v => Math.round(v * scale)) };
+    dealD    = { labels:[deal], vals:[Math.round(DS.deal.vals[DS.deal.labels.indexOf(deal)] * (year ? 0.33 : 1))] };
+    kpi      = { rev: info.rev, orders: Math.round(307 * scale), customers: Math.round(92 * scale) || 1, top: cat||'Classic Cars', topRev: cat ? CAT_REVENUE[cat||'Classic Cars'].rev : '$3.92M', growth: info.trend, ordGrowth: info.trend, countries:'19 countries' };
+  }
+
+  return { monthly, category: category, region: regionD, deal: dealD, kpi };
+}
+
+function applyFilters() {
+  const fd = getFilteredData();
+
+  // Update KPI cards
+  document.querySelector('.kpi-card:nth-child(1) .kpi-value').textContent  = fd.kpi.rev;
+  document.querySelector('.kpi-card:nth-child(1) .kpi-trend').textContent  = '↑ ' + fd.kpi.growth + ' growth';
+  document.querySelector('.kpi-card:nth-child(2) .kpi-value').textContent  = fd.kpi.orders;
+  document.querySelector('.kpi-card:nth-child(2) .kpi-trend').textContent  = '↑ ' + fd.kpi.ordGrowth + ' vs last';
+  document.querySelector('.kpi-card:nth-child(3) .kpi-value').textContent  = fd.kpi.customers;
+  document.querySelector('.kpi-card:nth-child(3) .kpi-trend').textContent  = '↑ ' + fd.kpi.countries;
+  document.querySelector('.kpi-card:nth-child(4) .kpi-value').textContent  = fd.kpi.top;
+  document.querySelector('.kpi-card:nth-child(4) .kpi-trend').textContent  = '↑ ' + fd.kpi.topRev + ' revenue';
+
+  // Update charts
+  if(dashCharts.revenue) {
+    dashCharts.revenue.data.labels   = fd.monthly.labels;
+    dashCharts.revenue.data.datasets[0].data = fd.monthly.vals;
+    dashCharts.revenue.update('active');
+  }
+  if(dashCharts.category) {
+    dashCharts.category.data.labels   = fd.category.labels;
+    dashCharts.category.data.datasets[0].data = fd.category.vals;
+    dashCharts.category.update('active');
+  }
+  if(dashCharts.region) {
+    dashCharts.region.data.labels   = fd.region.labels;
+    dashCharts.region.data.datasets[0].data = fd.region.vals;
+    dashCharts.region.update('active');
+  }
+  if(dashCharts.deal) {
+    dashCharts.deal.data.labels   = fd.deal.labels;
+    dashCharts.deal.data.datasets[0].data = fd.deal.vals || fd.deal.costs || DS.deal.vals;
+    dashCharts.deal.update('active');
+  }
+
+  // Sub-header update
+  const year = document.getElementById('f-year')?.value || '';
+  const cat  = document.getElementById('f-cat')?.value  || '';
+  const region = document.getElementById('f-region')?.value || '';
+  let subParts = [];
+  if(year)   subParts.push(year);
+  if(cat)    subParts.push(cat);
+  if(region) subParts.push(region);
+  const suffix = subParts.length ? ' · Filtered: ' + subParts.join(', ') : ' · 307 orders · 92 customers · 19 countries';
+  document.querySelector('.page-sub').textContent = 'Sales performance 2003–2005' + suffix;
+}
+
+function resetFilters() {
+  ['f-year','f-cat','f-region','f-deal'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  applyFilters();
+  showToast('Filters reset', 'info');
+}
+
+/* ─────────────────────────────────────────────
+   UPDATED DASHBOARD INIT (stores chart refs)
+───────────────────────────────────────────── */
+function initDash() {
+  dashCharts.revenue  = new Chart(document.getElementById('c-revenue'),  {type:'line', data:{labels:DS.monthly.labels,  datasets:[{label:'Revenue',data:DS.monthly.vals,  borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.07)',fill:true,tension:.4,pointRadius:2.5,pointBackgroundColor:'#3b82f6'}]}, options:BASE});
+  dashCharts.category = new Chart(document.getElementById('c-category'), {type:'bar', data:{labels:DS.category.labels, datasets:[{data:DS.category.vals, backgroundColor:PAL, borderRadius:6, borderSkipped:false}]}, options:{...BASE, plugins:{...BASE.plugins}, scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:9},maxRotation:30}}, y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:10},callback:v=>fmt(v)}}}}});
+  dashCharts.region   = new Chart(document.getElementById('c-region'),   {type:'bar',  data:{labels:DS.region.labels,   datasets:[{data:DS.region.vals,   backgroundColor:PAL,borderRadius:7,borderSkipped:false}]},                                                                                                         options:BASE});
+  dashCharts.deal     = new Chart(document.getElementById('c-deal'),     {type:'doughnut',data:{labels:DS.deal.labels,  datasets:[{data:DS.deal.vals,     backgroundColor:['#3b82f6','#22d3ee','#34d399'],borderWidth:0,hoverOffset:6}]},                                                                                    options:PIE_OPT});
+  buildHeatmap('dash-heatmap', false);
+  const pb=document.getElementById('profit-bars');
+  const maxP=DS.profit[0].v;
+  DS.profit.forEach(p=>{
+    pb.innerHTML+=`<div class="profit-row"><div class="profit-label">${p.l}</div><div class="profit-bar-wrap"><div class="profit-bar" style="width:${(p.v/maxP*100).toFixed(0)}%;background:linear-gradient(90deg,${p.c}88,${p.c})"></div></div><div class="profit-val" style="color:${p.c}">${fmt(p.v)}</div></div>`;
+  });
+}
+
+/* ─────────────────────────────────────────────
+   ANALYTICS SIDE PANEL
+───────────────────────────────────────────── */
+let apChart = null;
+
+const PANEL_DATA = {
+  revenue: {
+    title: 'Revenue Breakdown',
+    sub: 'All years · All categories',
+    build: () => {
+      const total = DS.category.vals.reduce((a,b)=>a+b,0);
+      const maxV  = DS.category.vals[0];
+      let html = `
+        <div class="ap-stat"><div class="ap-stat-label">Total Revenue</div><div class="ap-stat-value">$10.03M</div><div class="ap-stat-sub">↑ +12.4% year-over-year</div></div>
+        <div class="ap-stat"><div class="ap-stat-label">Avg Order Value</div><div class="ap-stat-value">$32,674</div><div class="ap-stat-sub">↑ +4.1% vs prior period</div></div>
+        <div class="ap-section-title">By Category</div>`;
+      DS.category.labels.forEach((lbl,i) => {
+        const v = DS.category.vals[i];
+        const pct = ((v/total)*100).toFixed(1);
+        html += `<div class="ap-bar-row">
+          <div class="ap-bar-label">${lbl}</div>
+          <div class="ap-bar-wrap"><div class="ap-bar-fill" style="width:${(v/maxV*100).toFixed(0)}%;background:${PAL[i]}"></div></div>
+          <div class="ap-bar-val" style="color:${PAL[i]}">${fmt(v)} <span style="color:var(--text3);font-weight:400">(${pct}%)</span></div>
+        </div>`;
+      });
+      html += `<div class="ap-section-title">Revenue Chart</div><div class="ap-canvas-wrap"><canvas id="ap-canvas"></canvas></div>`;
+      return html;
+    },
+    chart: () => new Chart(document.getElementById('ap-canvas'), {
+      type:'line',
+      data:{ labels:DS.monthly.labels, datasets:[{label:'Revenue',data:DS.monthly.vals,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.1)',fill:true,tension:.4,pointRadius:2}]},
+      options:BASE
+    })
+  },
+  categories: {
+    title: 'Category Analysis',
+    sub: '7 product lines · 2003–2005',
+    build: () => {
+      const total = DS.category.vals.reduce((a,b)=>a+b,0);
+      let html = `<div class="ap-stat"><div class="ap-stat-label">Top Category</div><div class="ap-stat-value">Classic Cars</div><div class="ap-stat-sub">↑ $3.92M · 39.1% of revenue</div></div>
+        <div class="ap-section-title">All Categories</div>`;
+      DS.category.labels.forEach((lbl,i) => {
+        const v = DS.category.vals[i];
+        const pct = ((v/total)*100).toFixed(1);
+        const profit = DS.profit.find(p=>p.l===lbl);
+        html += `
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:.5rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+              <span style="font-weight:600;font-size:.85rem">${lbl}</span>
+              <span style="font-size:.78rem;font-weight:700;color:${PAL[i]}">${fmt(v)}</span>
+            </div>
+            <div style="height:6px;background:var(--card);border-radius:3px;overflow:hidden;margin-bottom:.35rem">
+              <div style="height:100%;width:${(v/DS.category.vals[0]*100).toFixed(0)}%;background:${PAL[i]};border-radius:3px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text3)">
+              <span>${pct}% of total</span>
+              ${profit ? `<span style="color:var(--green)">Profit: ${fmt(profit.v)}</span>` : ''}
+            </div>
+          </div>`;
+      });
+      html += `<div class="ap-section-title">Category Chart</div><div class="ap-canvas-wrap"><canvas id="ap-canvas"></canvas></div>`;
+      return html;
+    },
+    chart: () => new Chart(document.getElementById('ap-canvas'), {
+      type:'bar',
+      data:{ labels:DS.category.labels, datasets:[{data:DS.category.vals,backgroundColor:PAL,borderRadius:6,borderSkipped:false}]},
+      options:{...BASE,indexAxis:'y'}
+    })
+  },
+  regions: {
+    title: 'Region Performance',
+    sub: '4 regions · EMEA leads',
+    build: () => {
+      const total = DS.region.vals.reduce((a,b)=>a+b,0);
+      let html = `<div class="ap-stat"><div class="ap-stat-label">Top Region</div><div class="ap-stat-value">EMEA</div><div class="ap-stat-sub">↑ $4.98M · 49.6% of revenue</div></div>
+        <div class="ap-section-title">Region Breakdown</div>`;
+      const regionColors = ['#3b82f6','#22d3ee','#34d399','#fbbf24'];
+      const regionOrders = [153,119,23,12];
+      const regionCountries = ['Europe + Middle East + Africa','USA + Canada + Mexico','Asia Pacific','Japan'];
+      DS.region.labels.forEach((lbl,i) => {
+        const v = DS.region.vals[i];
+        const pct = ((v/total)*100).toFixed(1);
+        html += `
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:.5rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem">
+              <span style="font-weight:600;font-size:.88rem">${lbl}</span>
+              <span style="font-size:.78rem;font-weight:700;color:${regionColors[i]}">${fmt(v)}</span>
+            </div>
+            <div style="height:6px;background:var(--card);border-radius:3px;overflow:hidden;margin-bottom:.4rem">
+              <div style="height:100%;width:${(v/DS.region.vals[0]*100).toFixed(0)}%;background:${regionColors[i]};border-radius:3px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text3)">
+              <span>${pct}% · ${regionOrders[i]} orders</span>
+              <span>${regionCountries[i]}</span>
+            </div>
+          </div>`;
+      });
+      html += `<div class="ap-section-title">Top Countries</div>`;
+      DS.country.labels.forEach((c,i) => {
+        html += `<div class="ap-bar-row"><div class="ap-bar-label">${c}</div><div class="ap-bar-wrap"><div class="ap-bar-fill" style="width:${(DS.country.vals[i]/DS.country.vals[0]*100).toFixed(0)}%;background:${PAL[i%PAL.length]}"></div></div><div class="ap-bar-val" style="color:${PAL[i%PAL.length]}">${fmt(DS.country.vals[i])}</div></div>`;
+      });
+      html += `<div class="ap-section-title">Region Chart</div><div class="ap-canvas-wrap"><canvas id="ap-canvas"></canvas></div>`;
+      return html;
+    },
+    chart: () => new Chart(document.getElementById('ap-canvas'), {
+      type:'doughnut',
+      data:{ labels:DS.region.labels, datasets:[{data:DS.region.vals,backgroundColor:['#3b82f6','#22d3ee','#34d399','#fbbf24'],borderWidth:0,hoverOffset:6}]},
+      options:PIE_OPT
+    })
+  },
+  heatmap: {
+    title: 'Quarterly Heatmap',
+    sub: 'Product performance by quarter',
+    build: () => {
+      let html = `<div class="ap-stat"><div class="ap-stat-label">Peak Quarter</div><div class="ap-stat-value">Q4 2004</div><div class="ap-stat-sub">↑ Classic Cars hit $1.01M</div></div>
+        <div class="ap-section-title">Quarterly Values</div>
+        <div style="overflow-x:auto"><table class="heatmap-table" id="ap-heatmap"></table></div>
+        <div class="ap-section-title" style="margin-top:1.25rem">Quarterly Trend</div>
+        <div class="ap-canvas-wrap"><canvas id="ap-canvas"></canvas></div>`;
+      return html;
+    },
+    afterRender: () => {
+      buildHeatmap('ap-heatmap', true);
+    },
+    chart: () => new Chart(document.getElementById('ap-canvas'), {
+      type:'line',
+      data:{ labels:DS.quarterly.labels, datasets:[
+        {label:'Classic Cars',data:DS.quarterly.classic,borderColor:'#3b82f6',tension:.4,fill:false,pointRadius:3},
+        {label:'Vintage Cars', data:DS.quarterly.vintage,borderColor:'#22d3ee',tension:.4,fill:false,pointRadius:3},
+        {label:'Motorcycles',  data:DS.quarterly.motos,  borderColor:'#34d399',tension:.4,fill:false,pointRadius:3}
+      ]},
+      options:{...BASE,plugins:{...BASE.plugins,legend:{display:true,labels:{color:'#94a3b8',font:{size:10},boxWidth:10}}}}
+    })
+  },
+
+  pipeline: {
+    title: 'Data Pipeline',
+    sub: 'ETL status · 2,823 records processed',
+    build: () => `
+      <div class="ap-stat"><div class="ap-stat-label">Pipeline Status</div><div class="ap-stat-value" style="color:var(--green)">● Active</div><div class="ap-stat-sub">Last run: Today 06:00 AM · 0 errors</div></div>
+      <div class="ap-section-title">Pipeline Stages</div>
+      ${[
+        {name:'Data Ingestion',   status:'✓ Complete', detail:'2,823 rows from CSV source',          pct:100, c:'var(--green)'},
+        {name:'Data Cleaning',    status:'✓ Complete', detail:'14 duplicates removed · 0 nulls',      pct:100, c:'var(--green)'},
+        {name:'Transformation',   status:'✓ Complete', detail:'Currency normalised · Dates parsed',    pct:100, c:'var(--green)'},
+        {name:'Feature Engineering',status:'✓ Complete',detail:'12 derived features created',         pct:100, c:'var(--green)'},
+        {name:'Data Validation',  status:'✓ Complete', detail:'Schema check passed · Types verified',  pct:100, c:'var(--green)'},
+        {name:'Load to Store',    status:'✓ Complete', detail:'In-memory store ready for analytics',   pct:100, c:'var(--green)'}
+      ].map(s=>`
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:.5rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem">
+            <span style="font-weight:600;font-size:.85rem">${s.name}</span>
+            <span style="font-size:.75rem;font-weight:700;color:${s.c}">${s.status}</span>
+          </div>
+          <div style="height:5px;background:var(--card);border-radius:3px;overflow:hidden;margin-bottom:.35rem">
+            <div style="height:100%;width:${s.pct}%;background:${s.c};border-radius:3px;transition:width .6s"></div>
+          </div>
+          <div style="font-size:.72rem;color:var(--text3)">${s.detail}</div>
+        </div>`).join('')}
+      <div class="ap-section-title">Data Summary</div>
+      ${[
+        {l:'Total Records', v:'2,823'},
+        {l:'Date Range',    v:'2003 – 2005'},
+        {l:'Countries',     v:'19'},
+        {l:'Product Lines', v:'7'},
+        {l:'Null Values',   v:'0'},
+        {l:'Duplicates Removed', v:'14'}
+      ].map(r=>`<div class="ap-bar-row"><div class="ap-bar-label">${r.l}</div><div style="flex:1"></div><div class="ap-bar-val" style="color:var(--accent2);font-weight:700">${r.v}</div></div>`).join('')}
+      <div class="ap-section-title">Record Volume by Year</div>
+      <div class="ap-canvas-wrap"><canvas id="ap-canvas"></canvas></div>`,
+    chart: () => new Chart(document.getElementById('ap-canvas'), {
+      type:'bar',
+      data:{ labels:['2003','2004','2005'], datasets:[{data:[1009,1003,811], backgroundColor:['#3b82f6','#22d3ee','#34d399'], borderRadius:7, borderSkipped:false}]},
+      options:{...BASE, scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:11}}}, y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:10}}}}}
+    })
+  },
+
+  nlpengine: {
+    title: 'NLP Engine',
+    sub: 'Natural Language Processing · Intent classifier',
+    build: () => `
+      <div class="ap-stat"><div class="ap-stat-label">Engine Status</div><div class="ap-stat-value" style="color:var(--green)">● Ready</div><div class="ap-stat-sub">Model: Rule-based NLP + keyword extraction</div></div>
+      <div class="ap-section-title">Supported Intents</div>
+      ${[
+        {intent:'Revenue Query',    ex:'"What is total revenue?"',           acc:'97%', c:'#3b82f6'},
+        {intent:'Order Analysis',   ex:'"How many orders were placed?"',     acc:'95%', c:'#22d3ee'},
+        {intent:'Customer Lookup',  ex:'"How many customers do we have?"',   acc:'94%', c:'#34d399'},
+        {intent:'Region Filter',    ex:'"Show EMEA performance"',            acc:'93%', c:'#fbbf24'},
+        {intent:'Product Query',    ex:'"Top selling product category?"',    acc:'96%', c:'#a78bfa'},
+        {intent:'Deal Size Filter', ex:'"Break down by deal size"',          acc:'92%', c:'#f87171'},
+        {intent:'Country Analysis', ex:'"Which countries drive most sales?"',acc:'91%', c:'#fb923c'}
+      ].map(i=>`
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:.5rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
+            <span style="font-weight:600;font-size:.84rem;color:${i.c}">${i.intent}</span>
+            <span style="font-size:.75rem;font-weight:700;color:var(--green)">${i.acc}</span>
+          </div>
+          <div style="font-size:.75rem;color:var(--text3);font-style:italic">${i.ex}</div>
+        </div>`).join('')}
+      <div class="ap-section-title">Query Volume (Today)</div>
+      <div class="ap-canvas-wrap"><canvas id="ap-canvas"></canvas></div>`,
+    chart: () => new Chart(document.getElementById('ap-canvas'), {
+      type:'line',
+      data:{ labels:['9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM','6PM'],
+             datasets:[{label:'Queries',data:[3,7,12,18,14,21,19,25,17,9],borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,.1)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#a78bfa'}]},
+      options:{...BASE, scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:10}}}, y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:10}}}}}
+    })
+  },
+
+  mlanalytics: {
+    title: 'ML Analytics',
+    sub: 'Machine Learning insights · Predictive models',
+    build: () => `
+      <div class="ap-stat"><div class="ap-stat-label">Model Status</div><div class="ap-stat-value" style="color:var(--green)">● Ready</div><div class="ap-stat-sub">3 models active · Last trained: 2025-03-30</div></div>
+      <div class="ap-section-title">Active Models</div>
+      ${[
+        {name:'Revenue Forecasting',   type:'Linear Regression', acc:'89.4%', metric:'R² Score', c:'#3b82f6'},
+        {name:'Customer Segmentation', type:'K-Means Clustering', acc:'4 clusters', metric:'Silhouette: 0.72', c:'#22d3ee'},
+        {name:'Churn Prediction',      type:'Random Forest',     acc:'91.2%', metric:'F1 Score: 0.88', c:'#34d399'}
+      ].map(m=>`
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;margin-bottom:.6rem">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+            <div>
+              <div style="font-weight:700;font-size:.88rem;color:${m.c}">${m.name}</div>
+              <div style="font-size:.73rem;color:var(--text3);margin-top:2px">${m.type}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:.82rem;font-weight:700;color:var(--green)">${m.acc}</div>
+              <div style="font-size:.68rem;color:var(--text3)">${m.metric}</div>
+            </div>
+          </div>
+        </div>`).join('')}
+      <div class="ap-section-title">Key Insights</div>
+      ${[
+        {icon:'↑', txt:'Q4 seasonality drives 38% of annual revenue — peak in November'},
+        {icon:'◉', txt:'Classic Cars segment shows highest profit margin at 42.3%'},
+        {icon:'⬡', txt:'EMEA region grows 2.1× faster than APAC over the 3-year period'},
+        {icon:'◈', txt:'Medium deal sizes (38–95K) have the best conversion rate at 68%'},
+        {icon:'◎', txt:'Top 10 customers account for 31% of total revenue'}
+      ].map(i=>`
+        <div style="display:flex;gap:.6rem;align-items:flex-start;padding:.55rem 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--accent2);font-weight:700;flex-shrink:0">${i.icon}</span>
+          <span style="font-size:.8rem;color:var(--text2);line-height:1.4">${i.txt}</span>
+        </div>`).join('')}
+      <div class="ap-section-title">Forecast — Next 3 Months</div>
+      <div class="ap-canvas-wrap"><canvas id="ap-canvas"></canvas></div>`,
+    chart: () => new Chart(document.getElementById('ap-canvas'), {
+      type:'line',
+      data:{ labels:['Apr','May','Jun'], datasets:[
+        {label:'Predicted Revenue', data:[920000,1050000,870000], borderColor:'#34d399', backgroundColor:'rgba(52,211,153,.1)', fill:true, tension:.4, pointRadius:4, pointBackgroundColor:'#34d399', borderDash:[5,3]},
+        {label:'Lower Bound',       data:[780000,890000,730000],  borderColor:'rgba(52,211,153,.3)', fill:false, tension:.4, pointRadius:2},
+        {label:'Upper Bound',       data:[1060000,1210000,1010000],borderColor:'rgba(52,211,153,.3)', fill:'-1', tension:.4, pointRadius:2, backgroundColor:'rgba(52,211,153,.05)'}
+      ]},
+      options:{...BASE, plugins:{...BASE.plugins, legend:{display:true,labels:{color:'#94a3b8',font:{size:10},boxWidth:10}}},
+        scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:11}}}, y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{size:10},callback:v=>fmt(v)}}}}
+    })
+  }
+};
+
+function showAnalyticsPanel(id) {
+  const pdata = PANEL_DATA[id];
+  if(!pdata) return;
+
+  // Update active state in sidebar
+  document.querySelectorAll('#sb-revenue,#sb-categories,#sb-regions,#sb-heatmap,#sb-pipeline,#sb-nlpengine,#sb-mlanalytics').forEach(el => el.classList.remove('active'));
+  const sbEl = document.getElementById('sb-' + id);
+  if(sbEl) sbEl.classList.add('active');
+
+  document.getElementById('ap-title').textContent = pdata.title;
+  document.getElementById('ap-sub').textContent   = pdata.sub;
+  document.getElementById('ap-body').innerHTML    = typeof pdata.build === 'function' ? pdata.build() : pdata.build;
+
+  if(pdata.afterRender) pdata.afterRender();
+
+  // Destroy previous chart and create new one
+  if(apChart) { apChart.destroy(); apChart = null; }
+  if(document.getElementById('ap-canvas')) {
+    setTimeout(() => { apChart = pdata.chart(); }, 50);
+  }
+
+  document.getElementById('analytics-panel').classList.add('open');
+}
+
+function closeAnalyticsPanel(e) {
+  if(e && e.target !== document.getElementById('analytics-panel')) return;
+  document.getElementById('analytics-panel').classList.remove('open');
+  document.querySelectorAll('#sb-revenue,#sb-categories,#sb-regions,#sb-heatmap,#sb-pipeline,#sb-nlpengine,#sb-mlanalytics').forEach(el => el.classList.remove('active'));
+  if(apChart) { apChart.destroy(); apChart = null; }
+}
+
+</script>
+</body>
+</html>
