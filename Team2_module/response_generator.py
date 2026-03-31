@@ -7,45 +7,77 @@ def generate_response(result: Dict[str, Any]) -> str:
     if result.get("status") == "error":
         return f"❌ Error: {result.get('message')}"
 
-    data = result.get("data")
+    data    = result.get("data")
     insight = result.get("insight", "")
+    intent  = result.get("intent", "")
+    query   = result.get("query", {})
 
-    if not data:
+    if data is None:
         return "⚠️ No data found for your query."
 
-    # 📈 Forecast handling
+    # ─── Scalar result (total revenue, single number) ───
+    if isinstance(data, (int, float)):
+        label = query.get("metric", "Value").replace("_", " ").title()
+        return f"📊 **{label}: ${data:,.2f}**\n\n💡 {insight}" if insight else f"📊 **{label}: ${data:,.2f}**"
+
+    # ─── Forecast result ───
     if isinstance(data, dict) and "forecast" in data:
         return f"📈 Forecasted Value: {data['forecast']}"
 
-    # 📊 Tabular data (MAIN IMPROVEMENT)
-    if isinstance(data, list):
-        preview = data[:5]
+    # ─── Aggregated dict result (group_by totals) ───
+    if isinstance(data, dict) and "total" in data:
+        total = data["total"]
+        return f"📊 **Total: ${total:,.2f}**\n\n💡 {insight}" if insight else f"📊 **Total: ${total:,.2f}**"
 
-        response = "✅ Top Results:\n"
+    # ─── List of aggregated rows (ranking/group_by results) ───
+    if isinstance(data, list) and len(data) > 0:
+        first = data[0]
 
-        for i, row in enumerate(preview, 1):
+        # Check if this is aggregated (has a summed metric) or raw rows
+        keys = list(first.keys())
 
-            # Smart field selection (clean output)
-            product = row.get("productline") or row.get("productcode") or "N/A"
-            sales = f"{row.get('sales', 0):,.2f}"
-            country = row.get("country", "")
+        # If it looks like aggregated ranking data
+        if any(k in keys for k in ["sales", "revenue", "profit"]):
+            metric_key = next((k for k in ["sales", "revenue", "profit"] if k in keys), keys[-1])
+            group_key  = next((k for k in keys if k != metric_key), None)
 
-            response += f"{i}. {product} | Sales: {sales}"
+            preview  = data[:10]
+            response = "✅ **Top Results:**\n"
 
-            if country:
-                response += f" | Country: {country}"
+            for i, row in enumerate(preview, 1):
+                group_val  = row.get(group_key, "N/A") if group_key else ""
+                metric_val = row.get(metric_key, 0)
 
-            response += "\n"
+                # Format metric value
+                if isinstance(metric_val, float) and metric_val > 1000:
+                    metric_str = f"${metric_val:,.2f}"
+                else:
+                    metric_str = f"{metric_val:,.2f}"
 
-        # Add insight if available
-        if insight:
-            response += f"\n💡 Insight: {insight}"
+                if group_val:
+                    response += f"{i}. {group_val} — {metric_str}\n"
+                else:
+                    response += f"{i}. {metric_str}\n"
 
-        return response
+            if insight:
+                response += f"\n💡 {insight}"
 
-    # 📌 Dictionary result (non-forecast)
+            return response
+
+        # Raw rows fallback — summarise instead of listing
+        total_sales = sum(row.get("sales", 0) for row in data)
+        count       = len(data)
+        return (
+            f"📊 **Query returned {count} records**\n"
+            f"Total Sales across results: **${total_sales:,.2f}**\n\n"
+            f"💡 {insight}" if insight else
+            f"📊 **Query returned {count} records**\n"
+            f"Total Sales across results: **${total_sales:,.2f}**"
+        )
+
+    # ─── Generic dict result ───
     if isinstance(data, dict):
-        formatted = "\n".join([f"{k}: {v}" for k, v in data.items()])
+        formatted = "\n".join([f"  {k}: {v}" for k, v in data.items()])
         return f"✅ Result:\n{formatted}"
 
-    return "⚠️ Unable to interpret response."
+    return "⚠️ Unable to interpret the response."

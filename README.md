@@ -309,3 +309,208 @@ CLIENT_SECRET=your_google_client_secret
 * Interactive dashboard with charts and KPIs
 * Visual insights based on user queries
 * Seamless integration across all modules
+
+
+
+# 📊 Team 4 – Visualization Module (InsightAI Dashboard)
+
+## 🚀 Overview
+
+This module provides the **frontend dashboard UI** for the InsightAI project.
+
+It connects to the backend and displays:
+
+* KPIs (Revenue, Orders, Customers)
+* Charts (Category, Region, Deal Size, Monthly Trend)
+* Filters (Year, Category, Region, Deal Size)
+* AI Chatbot interface
+
+---
+
+## ⚙️ Requirements
+
+### 🖥️ System Requirements
+
+* OS: Windows / macOS / Linux
+* Browser: Google Chrome (recommended)
+
+### 🧰 Software Requirements
+
+* Python **3.8+**
+* Web Browser
+* CMD / Terminal
+
+### 📦 Python Modules (if needed)
+
+Install using:
+
+```bash
+pip install -r requirements.txt
+```
+
+Main dependencies:
+
+* FastAPI (backend)
+* Uvicorn
+* Pandas
+* Scikit-learn
+
+---
+
+## 🔗 Dependency Note
+
+⚠️ This frontend **depends on backend APIs** running at:
+
+```
+http://127.0.0.1:8000
+```
+
+Make sure backend is running before starting frontend.
+
+---
+
+## ▶️ How to Run
+
+### 1️⃣ Start Backend (Required First)
+
+Open **CMD (not VS Code terminal)**:
+
+```bash
+cd C:\Users\manya\Downloads\ai-bi-chatbot-project
+.\run_server.bat
+```
+
+You should see:
+
+```
+Uvicorn running on http://127.0.0.1:8000
+```
+
+---
+
+### 2️⃣ Start Frontend
+
+Open a **new CMD window**:
+
+```bash
+cd C:\Users\manya\Downloads\ai-bi-chatbot-project\Team4_module
+python -m http.server 5500
+```
+
+---
+
+### 3️⃣ Open Dashboard
+
+```
+http://localhost:5500/InsightAI.html
+```
+
+---
+
+### 4️⃣ Hard Refresh
+
+```
+Ctrl + Shift + R
+```
+
+---
+
+## ✅ Features
+
+### 📊 Dashboard
+
+* Monthly Revenue Trend
+* Sales by Category
+* Region-wise Performance
+* Deal Size Distribution
+* Quarterly Heatmap
+* Profit Analysis
+
+### 🎛️ Filters
+
+* Year
+* Category
+* Region
+* Deal Size
+
+### 🤖 Chatbot
+
+Supports queries like:
+
+* What is total revenue?
+* Top 5 products by revenue
+* Compare sales by year
+* Forecast next year revenue
+* Sales in North America
+* Revenue for Classic Cars
+
+---
+
+## ⚠️ Important Notes
+
+* Always start **backend before frontend**
+* Use **CMD**, not PowerShell/VS Code terminal
+* Keep both terminals running
+* Dashboard uses **real backend data (no hardcoding)**
+
+---
+
+## 🐛 Common Issues
+
+### Charts not showing
+
+👉 Hard refresh:
+
+```
+Ctrl + Shift + R
+```
+
+---
+
+### Backend not connecting
+
+Check:
+
+```
+http://127.0.0.1:8000/health
+```
+
+---
+
+### Chatbot not working properly
+
+👉 Restart backend:
+
+```bash
+Ctrl + C
+.\run_server.bat
+```
+
+---
+
+### Port already in use
+
+```bash
+python -m http.server 5501
+```
+
+---
+
+## 📁 Files
+
+* `InsightAI.html` → Main dashboard
+* `frontend_patch.js` → UI logic
+* Chart.js → Visualization library
+
+---
+
+## 🎯 Status
+
+✅ Fully working frontend
+✅ Connected to backend APIs
+✅ Real-time data
+✅ Interactive dashboard
+✅ AI chatbot integrated
+
+---
+
